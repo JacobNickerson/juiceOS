@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import static JBashUtils.JBashUtils.parseCommand;
+
 public class Main {
     private static final Scanner userIn = new Scanner(System.in);
 
@@ -16,9 +18,7 @@ public class Main {
             System.out.print("[jbash]> ");
 
             // VERY basic argument parsing (on spaces)
-            var input = new ArrayList<>(Arrays.asList(
-                    userIn.nextLine().split("\\s+"))
-            );
+            var input = parseCommand(userIn.nextLine());
 
             // Gather command name
             var cmdName = input.stream().findFirst();
