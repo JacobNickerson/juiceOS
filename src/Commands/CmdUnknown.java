@@ -1,6 +1,6 @@
 package Commands;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class CmdUnknown extends Command {
     CmdUnknown(String name) {
@@ -13,7 +13,7 @@ public class CmdUnknown extends Command {
     }
 
     @Override
-    public int execute(ArrayList<String> args) {
+    public int execute(List<String> args) {
         System.out.println("Unknown command: " + getName());
         return -1;
     }

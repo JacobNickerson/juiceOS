@@ -1,6 +1,7 @@
 package Commands;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Command {
     private final String name;
@@ -12,5 +13,5 @@ public abstract class Command {
     }
 
     public abstract String getHelp();
-    public abstract int execute(ArrayList<String> args);
+    public abstract int execute(List<String> args);
 }

@@ -1,6 +1,6 @@
 package Commands;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class CmdEcho extends Command {
     CmdEcho(String name) {
@@ -13,7 +13,7 @@ public class CmdEcho extends Command {
     }
 
     @Override
-    public int execute(ArrayList<String> args) {
+    public int execute(List<String> args) {
         for (String arg : args) {
             System.out.print(arg);
             System.out.print(" ");
