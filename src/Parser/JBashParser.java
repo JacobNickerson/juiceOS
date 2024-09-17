@@ -196,6 +196,24 @@ public final class JBashParser {
         };
     }
 
+    /**
+     * Given a token, evaluates it into one or more tokens of kind "Word."
+     * @param token Token to evaluate
+     * @return An array of tokens
+     */
+    public Token[] evaluateToken(Token token) {
+        return switch(token.type()) {
+            case Word -> null;
+            case StringLit -> null;
+            case StringFormat -> null;
+            case ParenExpr -> null;
+            case CurlyExpr -> null;
+            case BrackExpr -> null;
+            case Dollar -> null;
+            case EOF -> null;
+        }
+    }
+
 
     public static ArrayList<Token> parseCommand(String input) throws JBParserException {
         var parser = new JBashParser(input);
