@@ -1,13 +1,9 @@
-import Commands.CmdEcho;
 import Commands.Command;
 import Commands.CommandFactory;
-import JBashUtils.Result;
 import Parser.JBParserException;
 import Parser.Token;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -15,7 +11,7 @@ import static Parser.JBashParser.parseCommand;
 
 public class Main {
     private static final Scanner userIn = new Scanner(System.in);
-    private static final boolean debug = false;
+    private static final boolean debug = true;
 
     public static void main(String[] args) {
         while (true) {

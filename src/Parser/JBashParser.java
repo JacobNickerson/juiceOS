@@ -17,19 +17,31 @@ public final class JBashParser {
     }
 
 
+    /**
+     * Returns whether we are at the end of the current string.
+     */
     private boolean end() {
         return current == str.length;
     }
 
+
     private char prev() {
         return str[current - 1];
     }
+
 
     /**
      * Returns the current character.
      */
     private char peek() {
         return str[current];
+    }
+
+    /**
+     * Skips to the end of the input.
+     */
+    private void skip() {
+        current = str.length;
     }
 
 
@@ -45,7 +57,7 @@ public final class JBashParser {
 
         // Couldn't find anything
         if (end()) {
-            //current = originalCurrent;
+            current = originalCurrent;
             return false;
         }
 
@@ -65,7 +77,7 @@ public final class JBashParser {
 
         // Couldn't find anything
         if (end()) {
-            //current = originalCurrent;
+            current = originalCurrent;
             return false;
         }
 
@@ -86,6 +98,7 @@ public final class JBashParser {
         return true;
     }
 
+
     /**
      * Increments current until it finds non-escaped target. Current will be one index before target.
      * Returns false if unsuccessful, and reverts current to before method call.
@@ -99,11 +112,13 @@ public final class JBashParser {
         return true;
     }
 
+
     /**
      * Attempts to match and consume any of `matches` with
      * the current character being pointed at.
      */
     private boolean match(char... matches) {
+        if (end()) return false;
         for (var c : matches) {
             if (peek() == c) {
                 current++;
@@ -114,10 +129,14 @@ public final class JBashParser {
     }
 
 
-    // Consumes the current lexeme from start to current, not including current.
-    // Increments the current pointer.
+    /**
+     * Consumes the current lexeme from start to current, including current.
+     * Increments current and resets start to current.
+     */
     private String consume() {
-        var lexeme = new String(str).substring(start, ++current);
+        current += end() ? 0 : 1;  // don't increment if already at end
+        String lexeme = new String(str).substring(start, current);
+
         start = current;
         return lexeme;
     }
@@ -134,6 +153,7 @@ public final class JBashParser {
             case ' ', '\t' -> {
                 // Keep going until no whitespace
                 while (match(' ', '\t'));
+
                 current--;
                 consume();
                 yield nextToken();
@@ -169,7 +189,7 @@ public final class JBashParser {
             case ')', '}', ']' -> { throw new JBParserException("Unexpected token "+peek()); }
             default -> {
                 if (!seekUntilNotEscaped(specialChars)) {
-                    current--;  // This helps ward off out-of-bound exceptions
+                    skip();
                 }
                 yield new Token(TokenType.Word, start, consume());
             }
