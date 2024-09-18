@@ -1,4 +1,4 @@
-package JBashUtils;
+package jbash.jbashutils;
 
 // The sealed interface representing the result of parsing
 public sealed interface Result<T> permits Result.Ok, Result.Err {

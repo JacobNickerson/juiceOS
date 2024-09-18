@@ -1,4 +1,4 @@
-package Parser;
+package jbash.parser;
 
 public record Token(TokenType type, int position, String lexeme) {
     @Override

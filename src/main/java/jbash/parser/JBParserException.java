@@ -1,4 +1,4 @@
-package Parser;
+package jbash.parser;
 
 public class JBParserException extends Exception {
     public static String msgNoMatching(char charToMatch, int indexOfFirst) {

@@ -1,13 +1,15 @@
-import Commands.Command;
-import Commands.CommandFactory;
-import Parser.JBParserException;
-import Parser.Token;
+package jbash;
+
+
+import jbash.commands.Command;
+import jbash.commands.CommandFactory;
+import jbash.parser.JBParserException;
 
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
-import static Parser.JBashParser.parseCommand;
+import static jbash.parser.JBashParser.parseCommand;
+
 
 public class Main {
     private static final Scanner userIn = new Scanner(System.in);
@@ -18,7 +20,7 @@ public class Main {
             // Prompt
             System.out.print("[jbash]> ");
 
-            ArrayList<Token> tokens;
+            ArrayList<String> tokens;
             try { tokens = parseCommand(userIn.nextLine()); }
             catch (JBParserException e) {
                 // Parsing failed: let the user know what went wrong
@@ -32,16 +34,12 @@ public class Main {
                 System.out.println();
             }
 
-            var words = tokens.stream()
-                              .map(Token::lexeme)
-                              .collect(Collectors.toList());
-
             // Gather command name
-            var cmdName = words.isEmpty() ? "" : words.getFirst();
+            var cmdName = tokens.isEmpty() ? "" : tokens.getFirst();
 
             // Execute command with remaining arguments
             Command cmd = CommandFactory.get(cmdName);
-            int returnCode = cmd.execute(words.subList(1, words.size()));
+            int returnCode = cmd.execute(tokens.subList(1, tokens.size()));
         }
     }
 }

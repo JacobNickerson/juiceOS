@@ -1,4 +1,4 @@
-package Parser;
+package jbash.parser;
 
 public enum TokenType {
     Word,               // NotExpandableString

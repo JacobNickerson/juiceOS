@@ -1,4 +1,4 @@
-package Commands;
+package jbash.commands;
 
 public class CommandFactory {
     public static Command get(String cmdName) {

@@ -1,6 +1,7 @@
-package Parser;
+package jbash.parser;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class JBashParser {
     private static final char[] specialChars =
@@ -214,15 +215,18 @@ public final class JBashParser {
         };
     }
 
-
-    public static ArrayList<Token> parseCommand(String input) throws JBParserException {
+    public static ArrayList<String> parseCommand(String input) throws JBParserException {
         var parser = new JBashParser(input);
         ArrayList<Token> tokens = new ArrayList<>();
         while (true) {
             var t = parser.nextToken();
             tokens.add(t);
             if (t.type() == TokenType.EOF) {
-                return tokens;
+                // TODO: Actually evaluate these tokens
+                return tokens.stream()
+                             .map(Token::lexeme)
+                             .filter(tok -> !tok.isEmpty())
+                             .collect(Collectors.toCollection(ArrayList::new));
             }
         }
     }

@@ -1,4 +1,4 @@
-package Commands;
+package jbash.commands;
 
 import java.util.List;
 
