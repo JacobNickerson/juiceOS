@@ -211,7 +211,7 @@ public final class JBashParser {
             case BrackExpr -> null;
             case Dollar -> null;
             case EOF -> null;
-        }
+        };
     }
 
 
