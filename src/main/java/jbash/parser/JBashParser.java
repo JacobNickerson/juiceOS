@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 public final class JBashParser {
     private static final char[] specialChars =
             {'{', '}', '[', ']', '(', ')', '$', ' '};
-    private StringBuilder str;         // Content string we are trying to parse
-    private int start;          // Start of the current consumed lexeme
-    private int current;        // Current character we are inspecting
+    private final StringBuilder str;  // Content string we are trying to parse
+    private int start;                // Start of the current consumed lexeme
+    private int current;              // Current character we are inspecting
 
 
     JBashParser(String str) {
@@ -206,7 +206,8 @@ public final class JBashParser {
         // Each loop, we process a pair of double quotes.
         int i = 0;  // Index of the last seen double quote.
         while (str.indexOf("\"", i) != -1) {
-            int start = str.indexOf("\"");
+            int start = str.indexOf("\"", i);
+            i = start + 1;
 
             // Escaped quotes aren't real, skip em
             if (start != 0 && str.charAt(start - 1) == '\\') {
@@ -217,6 +218,7 @@ public final class JBashParser {
                 // TODO: this should not throw an error, but rather begin a new line of input
                 throw new JBParserException(JBParserException.msgNoMatching('"', 1));
             }
+            i = end + 1;
 
             // Pull out the content for processing, delete it from the original string
             var content = str.substring(start+1, end);
@@ -229,9 +231,6 @@ public final class JBashParser {
             str.insert(start+1, content);
             str.setCharAt(start, '\'');  // This is our way of escaping the string contents
             str.setCharAt(end, '\'');    // Since single-quoted strings content is always escaped
-
-            // Increment counter
-            i = end + 1;
         }
     }
 
