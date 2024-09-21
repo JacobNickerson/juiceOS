@@ -5,8 +5,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public final class JBashParser {
+    private static final char escapedSentinel = '\uFDEF';
     private static final char[] specialChars =
-            {'{', '}', '[', ']', '(', ')', '$', ' '};
+            {'{', '}', '[', ']', '(', ')', '$', ' ',
+             '"', '\'', '\\', '\n', escapedSentinel};
     private final StringBuilder str;  // Content string we are trying to parse
     private int start;                // Start of the current consumed lexeme
     private int current;              // Current character we are inspecting
@@ -17,7 +19,6 @@ public final class JBashParser {
         this.start = 0;
         this.current = 0;
     }
-
 
     /**
      * Returns whether we are at the end of the current string.
@@ -150,8 +151,23 @@ public final class JBashParser {
      * @return next Token in input stream
      */
     public Token nextToken() throws JBParserException {
-        if (end()) return new Token(TokenType.EOF, start, "");
         return switch(peek()) {
+            case '\n' -> new Token(TokenType.EOF, start, "");
+            case '\\' -> {
+                consume();  // skip the value of this consume, go to next character
+                var type = peek() == '\n'
+                        ? TokenType.EOL
+                        : TokenType.Word;
+                yield new Token(type, start, consume());
+            }
+            case escapedSentinel -> {
+                if (!seek(escapedSentinel)) {
+                    throw new JBParserException("Internal parser error: escaped region did not have final escape sentinel");
+                }
+                var content = consume();
+                content = content.substring(1, content.length() - 1);
+                yield new Token(TokenType.Word, start, content);
+            }
             case ' ', '\t' -> {
                 // Keep going until no whitespace
                 while (match(' ', '\t'));
@@ -203,20 +219,29 @@ public final class JBashParser {
      * Processes quotes in the input to prepare for tokenization.
      */
     private void processQuotes() throws JBParserException {
-        // Each loop, we process a pair of double quotes.
+        // Each loop, we process a pair of quotes.
         int i = 0;  // Index of the last seen double quote.
-        while (str.indexOf("\"", i) != -1) {
-            int start = str.indexOf("\"", i);
+        while (true) {
+            // Which is next, ' or "
+            String quote;
+            int nextDQuote = str.indexOf("\"", i);
+            int nextSQuote = str.indexOf("'", i);
+            if (nextDQuote == nextSQuote) { break; }
+            else if (nextDQuote == -1)    { quote = "'"; }
+            else if (nextSQuote == -1)    { quote = "\""; }
+            else { quote = String.valueOf(str.charAt(Math.min(nextDQuote, nextSQuote)));}
+
+            int start = str.indexOf(quote, i);
             i = start + 1;
 
             // Escaped quotes aren't real, skip em
             if (start != 0 && str.charAt(start - 1) == '\\') {
                 continue;
             }
-            int end = str.indexOf("\"", i);
+            int end = str.indexOf(quote, i);
             if (end == -1) {
                 // TODO: this should not throw an error, but rather begin a new line of input
-                throw new JBParserException(JBParserException.msgNoMatching('"', 1));
+                throw new JBParserException(JBParserException.msgNoMatching(quote.charAt(0), 1));
             }
             i = end + 1;
 
@@ -229,19 +254,22 @@ public final class JBashParser {
 
             // Place parsed string back where it belongs
             str.insert(start+1, content);
-            str.setCharAt(start, '\'');  // This is our way of escaping the string contents
-            str.setCharAt(end, '\'');    // Since single-quoted strings content is always escaped
+            str.setCharAt(start, escapedSentinel);  // This is our way of escaping the string contents
+            str.setCharAt(end, escapedSentinel);    // Since single-quoted strings content is always escaped
         }
     }
 
     public static ArrayList<String> parseCommand(String input) throws JBParserException {
+        if (input.isEmpty()) { return new ArrayList<>(); }
+        if (!input.endsWith("\n")) input += "\n";  // ensure we end with a line separator
         var parser = new JBashParser(input);
         parser.processQuotes();
         ArrayList<Token> tokens = new ArrayList<>();
         do {
             var t = parser.nextToken();
             tokens.add(t);
-        } while (tokens.getLast().type() != TokenType.EOF);
+        } while (tokens.getLast().type() != TokenType.EOF
+             &&  tokens.getLast().type() != TokenType.EOL);
 
         return new ArrayList<>(
                 List.of(tokens.parallelStream()

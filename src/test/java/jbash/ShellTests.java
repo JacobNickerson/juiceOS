@@ -119,8 +119,8 @@ public class ShellTests {
                             List.of("april", "and", "may")),
                     Arguments.of(
                             "Double Quotes with Single Quotes",
-                            "\"april, or could it be 'may'?\"",
-                            List.of("april, or could it be 'may'?")),
+                            "\"april's showers bring may flowers\"",
+                            List.of("april's showers bring may flowers")),
                     Arguments.of(
                             "Single Double Quote",
                             "\"\nApril\"",
