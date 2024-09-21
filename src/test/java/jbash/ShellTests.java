@@ -47,11 +47,17 @@ public class ShellTests {
     class SingleQuotes {
         @ParameterizedTest
         @MethodSource
-        public void testSingleQuotes(String name, String command, Object expected) {
+        public void testSingleQuotesBasic(String name, String command, Object expected) {
             test(command, expected);
         }
 
-        public static Stream<Arguments> testSingleQuotes() {
+        @ParameterizedTest
+        @MethodSource
+        public void testSingleQuotesEscapes(String name, String command, Object expected) {
+            test(command, expected);
+        }
+
+        public static Stream<Arguments> testSingleQuotesBasic() {
             return Stream.of(
                     Arguments.of(
                             "Single Quotes Basic",
@@ -72,7 +78,12 @@ public class ShellTests {
                     Arguments.of(
                             "Single Quotes Concatenation",
                             "'april'and'june'",
-                            List.of("aprilandjune")),
+                            List.of("aprilandjune"))
+            );
+        }
+
+        public static Stream<Arguments> testSingleQuotesEscapes() {
+            return Stream.of(
                     Arguments.of(
                             "Single Quotes Escapes",  // Single quotes do not support escaping!
                             "'apr\\'il",  // 'apr\'il
@@ -123,6 +134,10 @@ public class ShellTests {
                             "Double Quotes with Single Quotes",
                             "\"april, or could it be 'may'?\"",
                             List.of("april, or could it be 'may'?")),
+                    Arguments.of(
+                            "Single Double Quote",
+                            "\"\nApril\"",
+                            List.of("April")),
 
                     /* POSIX TEST (2.2.3):
                     The <backslash> shall retain its special meaning as an escape character,

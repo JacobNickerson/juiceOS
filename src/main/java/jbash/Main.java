@@ -13,7 +13,7 @@ import static jbash.parser.JBashParser.parseCommand;
 
 public class Main {
     private static final Scanner userIn = new Scanner(System.in);
-    private static final boolean debug = true;
+    private static final boolean debug = false;
 
     public static void main(String[] args) {
         while (true) {

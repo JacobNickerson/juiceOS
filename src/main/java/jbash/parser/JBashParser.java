@@ -1,18 +1,19 @@
 package jbash.parser;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public final class JBashParser {
     private static final char[] specialChars =
             {'{', '}', '[', ']', '(', ')', '$', ' '};
-    private final char[] str;   // Content string we are trying to parse
+    private StringBuilder str;         // Content string we are trying to parse
     private int start;          // Start of the current consumed lexeme
     private int current;        // Current character we are inspecting
 
 
     JBashParser(String str) {
-        this.str = str.toCharArray();
+        this.str = new StringBuilder(str);
         this.start = 0;
         this.current = 0;
     }
@@ -22,12 +23,12 @@ public final class JBashParser {
      * Returns whether we are at the end of the current string.
      */
     private boolean end() {
-        return current == str.length;
+        return current == str.length();
     }
 
 
     private char prev() {
-        return str[current - 1];
+        return str.charAt(current - 1);
     }
 
 
@@ -35,14 +36,14 @@ public final class JBashParser {
      * Returns the current character.
      */
     private char peek() {
-        return str[current];
+        return str.charAt(current);
     }
 
     /**
      * Skips to the end of the input.
      */
     private void skip() {
-        current = str.length;
+        current = str.length();
     }
 
 
@@ -160,12 +161,13 @@ public final class JBashParser {
                 yield nextToken();
             }
             case '$' -> new Token(TokenType.Dollar, start, consume());
-            case '"', '\'' -> {
-                if (!seekNotEscaped(peek())) {
-                    throw new JBParserException(JBParserException.msgNoMatching(peek(), current));
+            case '\'' -> {
+                if (!seek('\'')) {
+                    throw new JBParserException(JBParserException.msgNoMatching('\'', current));
                 }
-                var type = peek() == '"' ? TokenType.StringFormat : TokenType.StringLit;
-                yield new Token(type, start, consume());
+                var content = consume();
+                content = content.substring(1, content.length() - 1);  // peel off those quotes
+                yield new Token(TokenType.StringLit, start, content);
             }
             case '(' -> {
                 if (!seek(')')) {
@@ -198,36 +200,54 @@ public final class JBashParser {
     }
 
     /**
-     * Given a token, evaluates it into one or more tokens of kind "Word."
-     * @param token Token to evaluate
-     * @return An array of tokens
+     * Processes quotes in the input to prepare for tokenization.
      */
-    public Token[] evaluateToken(Token token) {
-        return switch(token.type()) {
-            case Word -> null;
-            case StringLit -> null;
-            case StringFormat -> null;
-            case ParenExpr -> null;
-            case CurlyExpr -> null;
-            case BrackExpr -> null;
-            case Dollar -> null;
-            case EOF -> null;
-        };
+    private void processQuotes() throws JBParserException {
+        // Each loop, we process a pair of double quotes.
+        int i = 0;  // Index of the last seen double quote.
+        while (str.indexOf("\"", i) != -1) {
+            int start = str.indexOf("\"");
+
+            // Escaped quotes aren't real, skip em
+            if (start != 0 && str.charAt(start - 1) == '\\') {
+                continue;
+            }
+            int end = str.indexOf("\"", i);
+            if (end == -1) {
+                // TODO: this should not throw an error, but rather begin a new line of input
+                throw new JBParserException(JBParserException.msgNoMatching('"', 1));
+            }
+
+            // Pull out the content for processing, delete it from the original string
+            var content = str.substring(start+1, end);
+            str.delete(start+1, end);
+
+            // Process that content
+            // todo: something
+
+            // Place parsed string back where it belongs
+            str.insert(start+1, content);
+            str.setCharAt(start, '\'');  // This is our way of escaping the string contents
+            str.setCharAt(end, '\'');    // Since single-quoted strings content is always escaped
+
+            // Increment counter
+            i = end + 1;
+        }
     }
 
     public static ArrayList<String> parseCommand(String input) throws JBParserException {
         var parser = new JBashParser(input);
+        parser.processQuotes();
         ArrayList<Token> tokens = new ArrayList<>();
-        while (true) {
+        do {
             var t = parser.nextToken();
             tokens.add(t);
-            if (t.type() == TokenType.EOF) {
-                // TODO: Actually evaluate these tokens
-                return tokens.stream()
-                             .map(Token::lexeme)
-                             .filter(tok -> !tok.isEmpty())
-                             .collect(Collectors.toCollection(ArrayList::new));
-            }
-        }
+        } while (tokens.getLast().type() != TokenType.EOF);
+
+        return tokens.stream()
+                     .map(Token::lexeme)
+                     .filter(tok -> !tok.isEmpty())
+                     .collect(Collectors.toCollection(ArrayList::new));
     }
+
 }
