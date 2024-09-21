@@ -158,7 +158,7 @@ public final class JBashParser {
 
                 current--;
                 consume();
-                yield nextToken();
+                yield new Token(TokenType.Whitespace, start, "\0");
             }
             case '$' -> new Token(TokenType.Dollar, start, consume());
             case '\'' -> {
@@ -243,10 +243,11 @@ public final class JBashParser {
             tokens.add(t);
         } while (tokens.getLast().type() != TokenType.EOF);
 
-        return tokens.stream()
-                     .map(Token::lexeme)
-                     .filter(tok -> !tok.isEmpty())
-                     .collect(Collectors.toCollection(ArrayList::new));
+        return new ArrayList<>(
+                List.of(tokens.parallelStream()
+                        .map(Token::lexeme)
+                        .reduce("", (s, t) -> s + t)
+                        .split("\0")));
     }
 
 }

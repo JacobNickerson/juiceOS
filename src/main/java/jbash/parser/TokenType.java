@@ -8,5 +8,5 @@ public enum TokenType {
     CurlyExpr,          // {Curly Expression}
     BrackExpr,          // [Bracket Expression]
     Dollar,             // $
-    EOF,                // END OF FILE
+    EOF, Whitespace,                // END OF FILE
 }
