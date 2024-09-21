@@ -3,9 +3,14 @@ package jbash;
 
 import jbash.commands.Command;
 import jbash.commands.CommandFactory;
+import jbash.filesystem.FileSystemAPI;
+import jbash.filesystem.FileSystemObject;
+import jbash.filesystem.File;
+import jbash.filesystem.Directory;
 import jbash.parser.JBParserException;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Scanner;
 
 import static jbash.parser.JBashParser.parseCommand;
@@ -14,8 +19,10 @@ import static jbash.parser.JBashParser.parseCommand;
 public class Main {
     private static final Scanner userIn = new Scanner(System.in);
     private static final boolean debug = false;
+    private static final FileSystemAPI FSAPI = new FileSystemAPI();
 
     public static void main(String[] args) {
+
         while (true) {
             // Prompt
             System.out.print("[jbash]> ");
