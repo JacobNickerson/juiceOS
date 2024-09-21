@@ -27,6 +27,7 @@ public class Main {
                 System.out.println(e.getMessage());
                 continue;
             }
+            if (tokens.isEmpty()) continue;
 
             // Delete later: this just prints our tokens out
             if (debug) {
@@ -35,7 +36,7 @@ public class Main {
             }
 
             // Gather command name
-            var cmdName = tokens.isEmpty() ? "" : tokens.getFirst();
+            var cmdName = tokens.getFirst();
 
             // Execute command with remaining arguments
             Command cmd = CommandFactory.get(cmdName);
