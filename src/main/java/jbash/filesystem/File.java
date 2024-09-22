@@ -5,6 +5,7 @@ public class File extends FileSystemObject {
 
     public File(String name, Directory parent) {
         super(name, parent);
+        this.contents = "";
     }
 
     public File(String name, Directory parent, String contents) {
