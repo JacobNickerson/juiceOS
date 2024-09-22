@@ -25,7 +25,8 @@ public class FileSystemTests {
 
     @BeforeEach
     public void setupFSAPI() {
-        FSAPI = new FileSystemAPI();
+        FSAPI = FileSystemAPI.getInstance();
+        FSAPI.reset();
         root = FSAPI.getRoot();
     }
 
@@ -51,9 +52,22 @@ public class FileSystemTests {
     }
 
     @Test
-    void testMakeDirectoryWithPath() {
+    void testMakeDirectoryWithPathAndName() {
        Assertions.assertTrue(FSAPI.createDirectory("testFolder", "/"), "Directory not created in root");
        Assertions.assertTrue(FSAPI.createDirectory("testFolder", "/testFolder"), "Directory not created inside testFolder");
+    }
+
+    @Test
+    void testMakeDirectoryWithPath() {
+        Assertions.assertTrue(FSAPI.createDirectory("/testFolder"));
+        Optional<FileSystemObject> testDirectory = FSAPI.getFileSystemObject("/testFolder");
+        Assertions.assertTrue(testDirectory.isPresent(), "Test folder in root not found.");
+        Assertions.assertEquals(testDirectory.get().getPath(), "/testFolder", "Test folder path incorrect");
+
+        Assertions.assertTrue(FSAPI.createDirectory("/testFolder/testFolder2/"));
+        Optional<FileSystemObject> testDirectory2 = FSAPI.getFileSystemObject("/testFolder/testFolder2");
+        Assertions.assertTrue(testDirectory2.isPresent(), "Test folder in test folder 1 not found.");
+        Assertions.assertEquals(testDirectory2.get().getPath(), "/testFolder/testFolder2", "Test folder 2 path incorrect");
     }
 
     @Test
@@ -247,6 +261,7 @@ public class FileSystemTests {
         Assertions.assertTrue(testDirectoryOptional.isPresent() && testDirectoryOptional.get() instanceof Directory, "testFolder not found");
         Directory testDirectory = (Directory) testDirectoryOptional.get();
 
+        Assertions.assertTrue(FSAPI.moveCurrentDirectory(""), "Failed to move to home directory");
         Assertions.assertFalse(FSAPI.moveCurrentDirectory("sdahfk"), "Moved to a non-existing folder");
         Assertions.assertTrue(FSAPI.moveCurrentDirectory("/testFolder"), "Failed to move to testFolder");
         Assertions.assertEquals(testDirectory, FSAPI.getFileSystemObject("./").get(), "Current directory not equal to testFolder after moving to testFolder");
