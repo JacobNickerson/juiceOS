@@ -84,7 +84,7 @@ public class ShellTests {
                     Arguments.of(
                             "Single Quotes Escapes",  // Single quotes do not support escaping!
                             "'apr\\'il",  // 'apr\'il
-                            List.of("april")),
+                            List.of("apr\\il")),
                     Arguments.of(
                             "Single Quotes Escapes II",
                             "'april\\june'",

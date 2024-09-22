@@ -1,8 +1,12 @@
 package jbash.parser;
 
+import jbash.jbashutils.JBashUtils;
+
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import static jbash.jbashutils.JBashUtils.findFirstOf;
 
 public final class JBashParser {
     private static final char escapedSentinel = '\uFDEF';
@@ -12,6 +16,24 @@ public final class JBashParser {
     private final StringBuilder str;  // Content string we are trying to parse
     private int start;                // Start of the current consumed lexeme
     private int current;              // Current character we are inspecting
+
+    private static TokenType getKeywordType(String string) {
+        return switch(string) {
+            case "if"    -> TokenType.If;
+            case "then"  -> TokenType.Then;
+            case "else"  -> TokenType.Else;
+            case "elif"  -> TokenType.Elif;
+            case "fi"    -> TokenType.Fi;
+            case "do"    -> TokenType.Do;
+            case "done"  -> TokenType.Done;
+            case "case"  -> TokenType.Case;
+            case "esac"  -> TokenType.Esac;
+            case "while" -> TokenType.While;
+            case "until" -> TokenType.Until;
+            case "for"   -> TokenType.For;
+            default      -> TokenType.Word;
+        };
+    }
 
 
     JBashParser(String str) {
@@ -210,7 +232,8 @@ public final class JBashParser {
                 if (!seekUntilNotEscaped(specialChars)) {
                     skip();
                 }
-                yield new Token(TokenType.Word, start, consume());
+                var word = consume();
+                yield new Token(getKeywordType(word), start, word);
             }
         };
     }
@@ -221,17 +244,10 @@ public final class JBashParser {
     private void processQuotes() throws JBParserException {
         // Each loop, we process a pair of quotes.
         int i = 0;  // Index of the last seen double quote.
-        while (true) {
-            // Which is next, ' or "
-            String quote;
-            int nextDQuote = str.indexOf("\"", i);
-            int nextSQuote = str.indexOf("'", i);
-            if (nextDQuote == nextSQuote) { break; }
-            else if (nextDQuote == -1)    { quote = "'"; }
-            else if (nextSQuote == -1)    { quote = "\""; }
-            else { quote = String.valueOf(str.charAt(Math.min(nextDQuote, nextSQuote)));}
-
-            int start = str.indexOf(quote, i);
+        JBashUtils.FindResult findResult;
+        while ((findResult = findFirstOf(String.valueOf(str), i, "'", "\"")).index() != -1) {
+            var quote = findResult.str();
+            int start = findResult.index();
             i = start + 1;
 
             // Escaped quotes aren't real, skip em
@@ -246,11 +262,13 @@ public final class JBashParser {
             i = end + 1;
 
             // Pull out the content for processing, delete it from the original string
-            var content = str.substring(start+1, end);
+            var content = new StringBuilder(str.substring(start+1, end));
             str.delete(start+1, end);
 
-            // Process that content
-            // todo: something
+            // Process that content, if our quote is "
+            if (quote.equals("\"")) {
+                // TODO: Do something
+            }
 
             // Place parsed string back where it belongs
             str.insert(start+1, content);
