@@ -7,6 +7,7 @@ public class CommandFactory {
             case "pwd" -> new CmdPwd(cmdName);
             case "cd" -> new CmdCd(cmdName);
             case "mkdir" -> new CmdMkdir(cmdName);
+            case "ls" -> new CmdLs(cmdName);
             default -> new CmdUnknown(cmdName);
         };
     }
