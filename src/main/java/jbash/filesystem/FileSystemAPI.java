@@ -3,8 +3,6 @@ package jbash.filesystem;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class FileSystemAPI {
     private final Directory root;
@@ -145,6 +143,7 @@ public class FileSystemAPI {
         String name = strippedPath.substring(lastSlashIndex+1);
         return createDirectory(name, parentPath);
     }
+
 
     public Directory getRoot() {
         return this.root;
