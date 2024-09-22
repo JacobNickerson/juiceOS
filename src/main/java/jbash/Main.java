@@ -19,13 +19,14 @@ import static jbash.parser.JBashParser.parseCommand;
 public class Main {
     private static final Scanner userIn = new Scanner(System.in);
     private static final boolean debug = false;
-    private static final FileSystemAPI FSAPI = new FileSystemAPI();
+    private static FileSystemAPI FSAPI = FileSystemAPI.getInstance();
 
     public static void main(String[] args) {
 
         while (true) {
             // Prompt
-            System.out.print("[jbash]> ");
+            System.out.println("[jbash] " + (FSAPI.getCurrentDirectory().getPath()));
+            System.out.print("$ ");
 
             ArrayList<String> tokens;
             try { tokens = parseCommand(userIn.nextLine()); }
