@@ -3,14 +3,26 @@ package jbash.filesystem;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FileSystemAPI {
     private final Directory root;
     private Directory currentDirectory;
 
-    public FileSystemAPI() {
+    private static FileSystemAPI FSAPI = new FileSystemAPI();
+
+    private FileSystemAPI() {
         this.root = new Directory("root", null);
         this.currentDirectory = this.root;
+    }
+
+    public static FileSystemAPI getInstance() {
+        return FSAPI;
+    }
+
+    public void reset() {
+        this.FSAPI = new FileSystemAPI();
     }
 
     // TODO: Add support for quotes
@@ -21,10 +33,10 @@ public class FileSystemAPI {
         List<String> pathArgs = Arrays.stream(path.split("/")).filter(s -> !s.isEmpty()).toList();
         if (pathArgs.isEmpty()) { return Optional.of(root); }
         Directory workingDirectory;
-        if (pathArgs.getFirst().equals(".")) {  // starting in current directory
-            workingDirectory = this.currentDirectory;
-        } else {
+        if (pathArgs.getFirst().equals("/")) {  // starting in root directory
             workingDirectory = this.root;
+        } else {
+            workingDirectory = this.currentDirectory;
         }
         for (int i = 0; i < pathArgs.size(); i++) {
             if (i < pathArgs.size() - 1) {
@@ -121,6 +133,19 @@ public class FileSystemAPI {
         return true;
     }
 
+    public boolean createDirectory(String path) {
+        // split name from the rest of the path
+        String strippedPath = path.replaceAll("[" + "/" + "]+$", "");
+        if (strippedPath.isEmpty()) { return false; }
+        int lastSlashIndex = strippedPath.lastIndexOf("/");
+        String parentPath;
+        if (lastSlashIndex == 0) { parentPath = "/"; }
+        else if (lastSlashIndex == -1) { parentPath = "./"; }
+        else { parentPath = strippedPath.substring(0, lastSlashIndex); }
+        String name = strippedPath.substring(lastSlashIndex+1);
+        return createDirectory(name, parentPath);
+    }
+
     public Directory getRoot() {
         return this.root;
     }
@@ -133,10 +158,15 @@ public class FileSystemAPI {
     }
 
     public boolean moveCurrentDirectory(String path) {
+        if (path.isEmpty()) { this.currentDirectory = this.root; return true; }  // TODO: Implement home directory and change this to navigate to it
         Optional<FileSystemObject> newDirectoryOptional = getFileSystemObject(path);
         if (newDirectoryOptional.isEmpty() || !(newDirectoryOptional.get() instanceof Directory)) { return false; }
         this.currentDirectory = (Directory) newDirectoryOptional.get();
         return true;
+    }
+
+    public Directory getCurrentDirectory() {
+        return this.currentDirectory;
     }
 
 }
