@@ -22,4 +22,8 @@ public class Directory extends FileSystemObject {
     public Optional<FileSystemObject> findChild(String name) {
         return children.stream().filter(FSO -> FSO.getName().equals(name)).findFirst();
     }
+
+    public List<FileSystemObject> getChildren() {
+        return this.children;
+    }
 }
