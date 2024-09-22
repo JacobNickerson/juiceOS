@@ -27,7 +27,7 @@ public class JBashUtils {
                 .parallelStream()
                 .map(needle -> new FindResult(needle, haystack.indexOf(needle, startIndex)))
                 .filter(result -> result.index != -1)
-                .reduce(new FindResult("", -1), (a,b) -> a.index < b.index ? a : b);
+                .reduce(new FindResult("", -1), (a,b) -> a.index < b.index && a.index != -1 ? a : b);
     }
     // StringBuilder variant
     public static FindResult findFirstOf(StringBuilder haystack, int startIndex, String... needles) {
