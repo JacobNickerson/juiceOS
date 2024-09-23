@@ -24,6 +24,7 @@ public class CmdLs extends Command {
         boolean multiplePaths = false;
         if (args.isEmpty()) {
             List<FileSystemObject> currentFiles = FSAPI.getCurrentDirectory().getChildren();
+            if (currentFiles.isEmpty()) { return 0; }
             for (FileSystemObject file : currentFiles) {
                 System.out.print(file.getName());
                 System.out.print(" ");

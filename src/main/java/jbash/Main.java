@@ -20,13 +20,13 @@ public class Main {
     private static final Scanner userIn = new Scanner(System.in);
     private static final boolean debug = false;
     private static FileSystemAPI FSAPI = FileSystemAPI.getInstance();
+    private static final char shell_prompt = '$';
 
     public static void main(String[] args) {
 
         while (true) {
             // Prompt
-            System.out.println("[jbash] " + (FSAPI.getCurrentDirectory().getPath()));
-            System.out.print("$ ");
+            System.out.print("[jbash] " + (FSAPI.getCurrentDirectory().getPath()) + " " + shell_prompt + " ");
 
             ArrayList<String> tokens;
             try { tokens = parseCommand(userIn.nextLine()); }

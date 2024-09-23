@@ -223,10 +223,10 @@ public class FileSystemTests {
         Assertions.assertFalse(testFileOptional8.isPresent(), "Test file found with path ending in slash");
 
         Optional<FileSystemObject> testDirectoryOptional = FSAPI.getFileSystemObject("/testFolder");
-        Assertions.assertFalse(testDirectoryOptional.isPresent(), "Test directory not found with path not ending in a slash");
+        Assertions.assertTrue(testDirectoryOptional.isPresent(), "Test directory not found with path not ending in a slash");
 
-        Optional<FileSystemObject> testDirectoryOptional2 = FSAPI.getFileSystemObject("/testFolder");
-        Assertions.assertFalse(testDirectoryOptional2.isPresent(), "Test directory not found with path ending in a slash");
+        Optional<FileSystemObject> testDirectoryOptional2 = FSAPI.getFileSystemObject("/testFolder/");
+        Assertions.assertTrue(testDirectoryOptional2.isPresent(), "Test directory not found with path ending in a slash");
     }
 
     @Test

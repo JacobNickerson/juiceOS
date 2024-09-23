@@ -23,11 +23,9 @@ public class FileSystemAPI {
         this.FSAPI = new FileSystemAPI();
     }
 
-    // TODO: Add support for quotes
     public Optional<FileSystemObject> getFileSystemObject(String path) {
         if (path.isEmpty()) { return Optional.empty(); }
-        boolean directorySearch = false;
-        if (path.endsWith("/")) { directorySearch = true; }  // Paths ending in / can only reference directories
+        boolean directorySearch = path.endsWith("/"); // Paths ending in / can only reference directories
         List<String> pathArgs = Arrays.stream(path.split("/")).filter(s -> !s.isEmpty()).toList();
         if (pathArgs.isEmpty()) { return Optional.of(root); }
         Directory workingDirectory;
