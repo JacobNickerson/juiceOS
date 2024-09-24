@@ -1,15 +1,3 @@
-<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
-<a id="readme-top"></a>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
-
-
-
 <!-- PROJECT SHIELDS -->
 <!--
 *** I'm using markdown "reference style" links for readability.
@@ -81,6 +69,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
+TODO:
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 
@@ -114,7 +103,7 @@
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+TODO: Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
@@ -169,7 +158,9 @@ Distributed under no license.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - jacobnickerson817@gmail.com
+Jacob Nickerson - [https://www.linkedin.com/in/jacobnickerson817/](https://www.linkedin.com/in/jacobnickerson817) - jacobnickerson817@gmail.com
+
+Chris Bloodsworth - [https://www.linkedin.com/in/chris-bloodsworth/](https://www.linkedin.com/in/chris-bloodsworth/) - christopherbloodsworth@gmail.com
 
 Project Link: [https://github.com/jacobnickerson/jbash](https://github.com/jacobnickerson/jbash)
 
@@ -180,9 +171,7 @@ Project Link: [https://github.com/jacobnickerson/jbash](https://github.com/jacob
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* []() 
-* []()
-* []()
+* None so far!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -201,7 +190,7 @@ Project Link: [https://github.com/jacobnickerson/jbash](https://github.com/jacob
 [license-shield]: https://img.shields.io/github/license/jacobnickerson/jbash.svg?style=for-the-badge
 [license-url]: https://github.com/jacobnickerson/jbash/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/jacobnickerson817/
+[linkedin-url]: https://linktr.ee/javabash
 [product-screenshot]: images/screenshot.png
 [Java.com]: https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white
 [Java-url]:  https:://www.java.com/
