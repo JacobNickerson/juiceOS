@@ -171,7 +171,7 @@ Project Link: [https://github.com/jacobnickerson/jbash](https://github.com/jacob
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* None so far!
+* [Best README Template](https://github.com/othneildrew/Best-README-Template/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
