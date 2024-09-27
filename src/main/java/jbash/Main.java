@@ -39,7 +39,7 @@ public class Main {
 
             // Delete later: this just prints our tokens out
             if (debug) {
-                tokens.forEach(System.out::print);
+                tokens.forEach(t -> System.out.print("["+t+"]"));
                 System.out.println();
             }
 

@@ -48,15 +48,7 @@ public class ShellTests {
         @ParameterizedTest
         @MethodSource
         public void testSingleQuotesBasic(String name, String command, Object expected) {
-            test(command, expected);
-        }
-
-        @ParameterizedTest
-        @MethodSource
-        public void testSingleQuotesEscapes(String name, String command, Object expected) {
-            test(command, expected);
-        }
-
+            test(command, expected); }
         public static Stream<Arguments> testSingleQuotesBasic() {
             return Stream.of(
                     Arguments.of(
@@ -82,12 +74,17 @@ public class ShellTests {
             );
         }
 
+
+        @ParameterizedTest
+        @MethodSource
+        public void testSingleQuotesEscapes(String name, String command, Object expected) {
+            test(command, expected); }
         public static Stream<Arguments> testSingleQuotesEscapes() {
             return Stream.of(
                     Arguments.of(
                             "Single Quotes Escapes",  // Single quotes do not support escaping!
                             "'apr\\'il",  // 'apr\'il
-                            List.of("april")),
+                            List.of("apr\\il")),
                     Arguments.of(
                             "Single Quotes Escapes II",
                             "'april\\june'",
@@ -104,11 +101,9 @@ public class ShellTests {
     class DoubleQuotes {
         @ParameterizedTest
         @MethodSource
-        public void testDoubleQuotes(String name, String command, Object expected) {
-            test(command, expected);
-        }
-
-        public static Stream<Arguments> testDoubleQuotes() {
+        public void testDoubleQuotesBasic(String name, String command, Object expected) {
+            test(command, expected); }
+        public static Stream<Arguments> testDoubleQuotesBasic() {
             return Stream.of(
                     Arguments.of(
                             "Double Quotes Basic",
@@ -123,27 +118,46 @@ public class ShellTests {
                             "\"april\" and \"may\"",
                             List.of("april", "and", "may")),
                     Arguments.of(
-                            "Double Quotes Concatenation",
-                            "\"april\"and\"may\"",
-                            List.of("aprilandmay")),
-                    Arguments.of(
-                            "Double Quotes Concatenation",
-                            "\"april\"and\"may\"",
-                            List.of("aprilandmay")),
-                    Arguments.of(
                             "Double Quotes with Single Quotes",
-                            "\"april, or could it be 'may'?\"",
-                            List.of("april, or could it be 'may'?")),
+                            "\"april's showers bring may flowers\"",
+                            List.of("april's showers bring may flowers")),
                     Arguments.of(
                             "Single Double Quote",
                             "\"\nApril\"",
-                            List.of("April")),
+                            List.of("April"))
+            );
+        }
 
-                    /* POSIX TEST (2.2.3):
-                    The <backslash> shall retain its special meaning as an escape character,
-                    only when followed by one of the following characters when considered special:
-                        $   `   "   \   <newline>
-                    */
+
+        @ParameterizedTest
+        @MethodSource
+        public void testDoubleQuotesConcatenation(String name, String command, Object expected) {
+            test(command, expected); }
+        public static Stream<Arguments> testDoubleQuotesConcatenation() {
+            return Stream.of(
+                    Arguments.of(
+                            "Double Quotes Concatenation",
+                            "\"april\"and\"may\"",
+                            List.of("aprilandmay")),
+                    Arguments.of(
+                            "Double Quotes Concatenation",
+                            "\"april\"and\"may\"",
+                            List.of("aprilandmay"))
+            );
+        }
+
+
+        /* POSIX TEST (2.2.3):
+            The <backslash> shall retain its special meaning as an escape character,
+            only when followed by one of the following characters when considered special:
+                $   `   "   \   <newline>
+        */
+        @ParameterizedTest
+        @MethodSource
+        public void testDoubleQuotesEscapes(String name, String command, Object expected) {
+            test(command, expected); }
+        public static Stream<Arguments> testDoubleQuotesEscapes() {
+            return Stream.of(
                     Arguments.of(
                             "Double Quotes Escaped Dollar",
                             "\"\\$EAL\"",
@@ -163,7 +177,7 @@ public class ShellTests {
                     Arguments.of(
                             "Double Quotes Escaped Newline",
                             "\"april and...\\\nmay\"",  // "april and...\
-                                                        // may"
+                            // may"
                             List.of("april and...may")),
                     Arguments.of(
                             "Double Quotes Only Aforementioned Characters",
