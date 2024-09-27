@@ -3,6 +3,7 @@ package jbash;
 
 import jbash.commands.Command;
 import jbash.commands.CommandFactory;
+import jbash.environment.JBashEnvironment;
 import jbash.filesystem.FileSystemAPI;
 import jbash.filesystem.FileSystemObject;
 import jbash.filesystem.File;
@@ -15,18 +16,17 @@ import java.util.Scanner;
 
 import static jbash.parser.JBashParser.parseCommand;
 
-
 public class Main {
     private static final Scanner userIn = new Scanner(System.in);
     private static final boolean debug = false;
-    private static FileSystemAPI FSAPI = FileSystemAPI.getInstance();
+    private static final FileSystemAPI FSAPI = FileSystemAPI.getInstance();
+    private static final JBashEnvironment ENV = JBashEnvironment.getInstance();
     private static final char shell_prompt = '$';
 
     public static void main(String[] args) {
-
         while (true) {
             // Prompt
-            System.out.print("[jbash] " + (FSAPI.getCurrentDirectory().getPath()) + " " + shell_prompt + " ");
+            System.out.print("[jbash] " + ENV.get("PWD") + " " + ENV.get("PS1"));
 
             ArrayList<String> tokens;
             try { tokens = parseCommand(userIn.nextLine()); }
