@@ -16,18 +16,26 @@ public class Main {
     private static final boolean debug = false;
     private static final FileSystemAPI FSAPI = FileSystemAPI.getInstance();
     private static final JBashEnvironment ENV = JBashEnvironment.getInstance();
-    private static final char shell_prompt = '$';
+
+    public static void flushStdout() {
+        System.out.print(ENV.consume(ENV.STD_OUT).orElse(""));
+    }
+    public static void flushStderr() {
+        System.out.print("\033[31m"+ENV.consume(ENV.STD_ERR).orElse("")+"\033[0m");
+    }
 
     public static void main(String[] args) {
         while (true) {
             // Prompt
-            System.out.print("[jbash] " + ENV.get("PWD") + " " + ENV.get("PS1"));
+            System.out.print("[jbash] " + ENV.get("PWD") + " " + (ENV.get("?").equals("0") ? ENV.get("PS1") : "× "));
 
             ArrayList<String> tokens;
             try { tokens = parseCommand(userIn.nextLine()); }
             catch (JBParserException e) {
                 // Parsing failed: let the user know what went wrong
-                System.out.println(e.getMessage());
+                ENV.send(ENV.STD_ERR, e.getMessage()+"\n");
+                flushStdout();
+                flushStderr();
                 continue;
             }
             if (tokens.isEmpty()) continue;
@@ -41,9 +49,10 @@ public class Main {
             // Gather command name
             var cmdName = tokens.getFirst();
             int returnCode = new JBashProcess().exec(cmdName, tokens.subList(1, tokens.size()));
+            ENV.set("?", Integer.toString(returnCode));
 
-            System.out.print(ENV.consume(ENV.STD_OUT).orElse(""));
-            System.out.print("\033[31m"+ENV.consume(ENV.STD_ERR).orElse("")+"\033[0m");
+            flushStdout();
+            flushStderr();
         }
     }
 }

@@ -23,6 +23,7 @@ public final class JBashEnvironment {
         environment.put("PS1", "$ ");
         environment.put("PWD", "/");
         environment.put("HOME", "/");
+        environment.put("?", "0");
 
         fds = new HashMap<>();
     }
