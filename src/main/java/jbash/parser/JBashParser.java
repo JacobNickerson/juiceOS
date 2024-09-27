@@ -170,7 +170,7 @@ public final class JBashParser {
      * Will return a token of TokenKind.EOF if no more tokens are available.
      * @return next Token in input stream
      */
-    public Token nextToken() throws JBParserException {
+    private Token nextToken() throws JBParserException {
         return switch(peek()) {
             case '\n' -> new Token(TokenType.EOF, start, "");
             case '\\' -> {
@@ -252,7 +252,14 @@ public final class JBashParser {
             if (start != 0 && str.charAt(start - 1) == '\\') {
                 continue;
             }
-            int end = str.indexOf(quote, i);
+
+            // loop until we find a non-escaped quote
+            int end;
+            while (true) {
+                end = str.indexOf(quote, i);
+                if (end == -1 || str.charAt(end - 1) != '\\') break;
+                else i = end + 1;
+            }
             if (end == -1) {
                 // TODO: this should not throw an error, but rather begin a new line of input
                 throw new JBParserException(JBParserException.msgNoMatching(quote.charAt(0), 1));
