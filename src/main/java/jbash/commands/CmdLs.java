@@ -4,11 +4,10 @@ import jbash.filesystem.Directory;
 import jbash.filesystem.FileSystemAPI;
 import jbash.filesystem.FileSystemObject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CmdLs extends Command {
+class CmdLs extends Command {
     CmdLs(String name) {
         super("ls");
     }
@@ -19,31 +18,31 @@ public class CmdLs extends Command {
     }
 
     @Override
-    public int execute(List<String> args) {
+    public int execute(List<String> argv) {
         FileSystemAPI FSAPI = FileSystemAPI.getInstance();
         boolean multiplePaths = false;
-        if (args.isEmpty()) {
+        if (argv.isEmpty()) {
             List<FileSystemObject> currentFiles = FSAPI.getCurrentDirectory().getChildren();
             if (currentFiles.isEmpty()) { return 0; }
             for (FileSystemObject file : currentFiles) {
-                System.out.print(file.getName());
-                System.out.print(" ");
+                cmdPrint(file.getName());
+                cmdPrint(" ");
             }
-            System.out.println();
+            cmdPrintln();
         } else {
-            if (args.size() > 1) { multiplePaths = true; }
-            for (String path : args) {
+            if (argv.size() > 1) { multiplePaths = true; }
+            for (String path : argv) {
                 Optional<FileSystemObject> directory = FSAPI.getFileSystemObject(path);
-                if (directory.isEmpty()) { System.out.println("ls: cannot access '" + path + "': No such file or directory"); }
-                else if (!(directory.get() instanceof Directory)) { System.out.println(directory.get().getName()); }
+                if (directory.isEmpty()) { cmdErrln("ls: cannot access '" + path + "': No such file or directory"); }
+                else if (!(directory.get() instanceof Directory)) { cmdPrintln(directory.get().getName()); }
                 else {
                     List<FileSystemObject> children = ((Directory) directory.get()).getChildren();
                     if (multiplePaths) { System.out.println(path + ":"); }
                     for (FileSystemObject child : children) {
-                        System.out.print(child.getName());
-                        System.out.print(" ");
+                        cmdPrint(child.getName());
+                        cmdPrint(" ");
                     }
-                    System.out.println();
+                    cmdPrintln();
                 }
             }
         }

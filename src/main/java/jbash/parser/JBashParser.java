@@ -38,7 +38,11 @@ public final class JBashParser {
         if (input.isEmpty()) { return new ArrayList<>(); }
         var parser = new JBashParser(JBashLexer.lexCommand(input));
 
-        //parser.processRedirects();
+        parser.processRedirects();
+
+        if (!parser.redirectTo.isEmpty()) {
+
+        }
         return new ArrayList<>(
                 List.of(parser.tokens.parallelStream()
                         .map(Token::lexeme)

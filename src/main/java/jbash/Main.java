@@ -1,17 +1,12 @@
 package jbash;
 
 
-import jbash.commands.Command;
-import jbash.commands.CommandFactory;
 import jbash.environment.JBashEnvironment;
 import jbash.filesystem.FileSystemAPI;
-import jbash.filesystem.FileSystemObject;
-import jbash.filesystem.File;
-import jbash.filesystem.Directory;
 import jbash.parser.JBParserException;
+import jbash.commands.JBashProcess;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Scanner;
 
 import static jbash.parser.JBashParser.parseCommand;
@@ -45,10 +40,10 @@ public class Main {
 
             // Gather command name
             var cmdName = tokens.getFirst();
+            int returnCode = new JBashProcess().exec(cmdName, tokens.subList(1, tokens.size()));
 
-            // Execute command with remaining arguments
-            Command cmd = CommandFactory.get(cmdName);
-            int returnCode = cmd.execute(tokens.subList(1, tokens.size()));
+            System.out.print(ENV.consume(ENV.STD_OUT).orElse(""));
+            System.out.print("\033[31m"+ENV.consume(ENV.STD_ERR).orElse("")+"\033[0m");
         }
     }
 }

@@ -4,7 +4,7 @@ import jbash.filesystem.FileSystemAPI;
 
 import java.util.List;
 
-public class CmdCd extends Command {
+class CmdCd extends Command {
     CmdCd(String name) {
         super("cd");
     }
@@ -15,15 +15,15 @@ public class CmdCd extends Command {
     }
 
     @Override
-    public int execute(List<String> args) {
-        if (args.size() > 1) { System.out.println("cd: too many arguments"); return 1; }
-        if (args.isEmpty()) {
+    public int execute(List<String> argv) {
+        if (argv.size() > 1) { cmdErrln("cd: too many arguments"); return 1; }
+        if (argv.isEmpty()) {
             FileSystemAPI.getInstance().moveCurrentDirectory("");
             return 0;
         }
-        if (FileSystemAPI.getInstance().moveCurrentDirectory(args.getFirst())) { return 0; }
+        if (FileSystemAPI.getInstance().moveCurrentDirectory(argv.getFirst())) { return 0; }
         // TODO: Add explicit error messaging
-        System.out.println("cd: cringe bro");
+        cmdErrln("cd: cringe bro");
         return 1;
     }
 }
