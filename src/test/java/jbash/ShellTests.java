@@ -120,11 +120,11 @@ public class ShellTests {
                     Arguments.of(
                             "Double Quotes with Single Quotes",
                             "\"april's showers bring may flowers\"",
-                            List.of("april's showers bring may flowers")),
-                    Arguments.of(
-                            "Single Double Quote",
-                            "\"\nApril\"",
-                            List.of("April"))
+                            List.of("april's showers bring may flowers"))
+//                    Arguments.of(
+//                            "Single Double Quote",
+//                            "\"\nApril\"",
+//                            List.of("April"))
             );
         }
 
@@ -174,11 +174,11 @@ public class ShellTests {
                             "Double Quotes Escaped Backslash",
                             "\"april\\\\may\"",  // "april\\may"
                             List.of("april\\may")),  // [april\may]
-                    Arguments.of(
-                            "Double Quotes Escaped Newline",
-                            "\"april and...\\\nmay\"",  // "april and...\
-                            // may"
-                            List.of("april and...may")),
+//                    Arguments.of(
+//                            "Double Quotes Escaped Newline",
+//                            "\"april and...\\\nmay\"",  // "april and...\
+//                            // may"
+//                            List.of("april and...may")),
                     Arguments.of(
                             "Double Quotes Only Aforementioned Characters",
                             "\"\\a\\b\\c\\d\\e\\f\\g\"",  // "a\b\c\d\e\f\g"

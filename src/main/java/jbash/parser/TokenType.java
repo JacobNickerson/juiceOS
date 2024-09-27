@@ -11,6 +11,8 @@ public enum TokenType {
     AndIf,
     OrIf,
     DSemi,
+    Less,
+    Great,
     DLess,
     DGreat,
     LessAnd,
