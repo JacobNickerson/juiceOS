@@ -10,11 +10,13 @@ public class FileSystemAPI {
     private final Directory root;
     private Directory currentDirectory;
 
+    final Disk disk;
     private static FileSystemAPI FSAPI = new FileSystemAPI();
     private static final JBashEnvironment ENV = JBashEnvironment.getInstance();
 
     private FileSystemAPI() {
         this.root = new Directory("root", null);
+        this.disk = new Disk("fs10m.jfs", 10*1024*1024);  // 10MB filesystem
         this.currentDirectory = this.root;
     }
 
