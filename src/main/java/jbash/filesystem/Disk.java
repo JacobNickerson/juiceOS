@@ -8,13 +8,16 @@ import java.io.*;
  */
 public class Disk {
     private final RandomAccessFile fs;
+    private final long SIZE_BYTES;
+    private final int INODE_SIZE_BYTES;
+    private final int NUM_INODES;
 
     // Offsets for retrieving from the file
-    private static final int OFFSET_MAGIC_NUMBER     = 0;
-    private static final int OFFSET_NUM_INODES       = 4;
-    private static final int OFFSET_INODE_SIZE       = 12;
-    private static final int OFFSET_INODES_START_PTR = 20;
-    private static final int OFFSET_DATA_START_PTR   = 24;
+    private static final int OFFSET_MAGIC_NUMBER     =                        0;
+    private static final int OFFSET_NUM_INODES       = OFFSET_MAGIC_NUMBER   +4;
+    private static final int OFFSET_INODE_SIZE       = OFFSET_NUM_INODES     +4;
+    private static final int OFFSET_DATA_START_PTR   = OFFSET_INODE_SIZE     +4;
+    private static final int OFFSET_INODES_START     = OFFSET_DATA_START_PTR +8;
 
     /**
      * Constructor for a new disk.
@@ -32,38 +35,32 @@ public class Disk {
         try {
             fs = new RandomAccessFile(name, "rw");
 
-            // Assume already initialized
-            if (fs.length() == sizeBytes) {
-               return;
-            }
-
             // Filesystem by this name already exists, but isn't the size we specified!
-            else if (fs.length() != 0 && fs.length() != sizeBytes) {
+            if (fs.length() != 0 && fs.length() != sizeBytes) {
                 System.out.println("WARNING: Filesystem "+name+" already exists, but is of size "+fs.length());
                 System.out.println("         The system will not be recreated.");
-                return;
             }
 
-            // Otherwise, let's format it.
-            System.out.print("Formatting filesystem "+name+"...");
+            // Filesystem doesn't yet exist, let's format one.
+            else if (fs.length() == 0){
+                System.out.print("Formatting filesystem "+name+"...");
+                format(sizeBytes);
+                System.out.println("done.");
+            }
 
-            format(sizeBytes);
-            System.out.println("done.");
+            // Set important static variables.
+            SIZE_BYTES = fs.length();
 
+            fs.seek(OFFSET_INODE_SIZE);
+            INODE_SIZE_BYTES = fs.readInt();
+
+            fs.seek(OFFSET_NUM_INODES);
+            NUM_INODES = fs.readInt();
 
         } catch (Exception e) {
             // Vague error but I doubt this would happen often
             throw new RuntimeException("Cannot create disk: "+name);
         }
-    }
-
-    /**
-     * Retrieves the number of inodes in this filesystem.
-     * @return
-     */
-    long getNumINodes() throws IOException {
-        fs.seek(4);
-        fs.readLong();
     }
 
     /**
@@ -82,18 +79,23 @@ public class Disk {
             remainingBytes -= toWrite;
         }
 
-        // Magic number at the start to tell this is a jfs file
+        // 4 BYTES: Magic number at the start to tell this is a jfs file
         fs.seek(OFFSET_MAGIC_NUMBER);
-        fs.writeBytes("JFS!");  // MUST BE 4 BYTES
+        fs.writeBytes("JFS!");  // MUST BE AT MOST 4 BYTES
 
-        // Default ratio for this small filesystem is 1 inode per 8kb
-        long numINodes = sizeBytes / (8 * 1024);
+        // 4 BYTES:
+        int numINodes = (int) (SIZE_BYTES / (8 * 1024));
         fs.seek(OFFSET_NUM_INODES);
-        fs.writeLong(numINodes);
+        fs.writeInt(numINodes);
 
-        // Default size is 256, that should be reasonable, right?
-        long inodeSizeBytes = 256;
+        // 4 BYTES:
+        int inodeSizeBytes = 256;
         fs.seek(OFFSET_INODE_SIZE);
-        fs.writeLong(inodeSizeBytes);
+        fs.writeInt(inodeSizeBytes);
+
+        // 8 BYTES: Pointer to the data block.
+        long dataBlockPtr = (long) numINodes * inodeSizeBytes;
+        fs.seek(OFFSET_DATA_START_PTR);
+        fs.writeLong(dataBlockPtr);
     }
 }
