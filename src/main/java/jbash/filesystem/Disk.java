@@ -21,10 +21,10 @@ public class Disk {
 
     /**
      * Constructor for a new disk.
-     * Will search for an existing file system under <code>name</code>,
+     * Will search for an existing disk under <code>name</code>,
      * and will create it with size <code>sizeBytes</code> if it doesn't exist.
-     * @param name
-     * @param sizeBytes
+     * @param name filename of the existing disk, or new one
+     * @param sizeBytes size, in bytes, of the disk
      */
     Disk(String name, long sizeBytes) {
         // Minimum size for the file system is 1MB
@@ -47,6 +47,8 @@ public class Disk {
                 format(sizeBytes);
                 System.out.println("done.");
             }
+
+            System.out.println("Loading filesystem "+name+";");
 
             // Set important static variables.
             SIZE_BYTES = fs.length();
