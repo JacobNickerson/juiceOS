@@ -16,12 +16,13 @@ public final class JBashEnvironment {
     public final int STD_IN = 0;
     public final int STD_OUT = 1;
     public final int STD_ERR = 2;
+    private final int MAX_BUF_SIZE = 80;
 
     // File descriptor -> buffer.
     private final HashMap<Integer, FileBuffer> fds;
 
     /**
-     * Flushes the buffer of a file descriptor out to its destination.
+     * Flushes the buffer of a file descriptor out to its destination, and clears the buffer associated with it.
      * For STD_IN, this just clears it.
      * For STD_OUT and STD_ERR, this is to the screen.
      * For any other file descriptor, this writes to that file.
@@ -47,8 +48,7 @@ public final class JBashEnvironment {
                     return;
                 }
 
-                fbuf.file.setContents(fbuf.file.getContents() + fbuf.buffer);
-                fbuf.buffer = "";
+                fbuf.file.setContents(fbuf.file.getContents() + consume(fd));
             }
         }
     }
@@ -93,13 +93,18 @@ public final class JBashEnvironment {
     }
 
     /**
-     * Sends a message to file descriptor <code>fd</code>.
+     * Appends a message to file descriptor <code>fd</code>'s buffer.
      */
     public void send(int fd, String msg) {
         var fbuf = fds.get(fd);
         if (fbuf == null) return;
 
         fbuf.buffer += msg;
+
+        // Automatically flush if buffer is getting too large
+        if (fbuf.buffer.length() > MAX_BUF_SIZE) {
+            fdFlush(fd);
+        }
     }
 
     /**
