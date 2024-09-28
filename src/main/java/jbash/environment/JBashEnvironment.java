@@ -1,5 +1,8 @@
 package jbash.environment;
 
+import jbash.filesystem.FileSystemAPI;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -14,8 +17,41 @@ public final class JBashEnvironment {
     public final int STD_OUT = 1;
     public final int STD_ERR = 2;
 
-    // File descriptor -> File content. Refers only to open files or STDIN,STDOUT,STDERR.
-    private final HashMap<Integer, String> fds;
+    // File descriptor -> buffer.
+    private final HashMap<Integer, FileBuffer> fds;
+
+    /**
+     * Flushes the buffer of a file descriptor out to its destination.
+     * For STD_IN, this just clears it.
+     * For STD_OUT and STD_ERR, this is to the screen.
+     * For any other file descriptor, this writes to that file.
+     * @param fd File descriptor to write to.
+     */
+    public void fdFlush(int fd) {
+        switch (fd) {
+            case STD_IN -> {
+                consume(STD_IN);  // just clears STD_IN
+            }
+            case STD_OUT -> System.out.print(consume(STD_OUT).orElse(""));
+            case STD_ERR -> System.out.print("\033[31m"+consume(STD_ERR).orElse("")+"\033[0m");
+            default -> {
+                var fbuf = fds.get(fd);
+                if (fbuf == null) {
+                    send(STD_ERR, "No such buffer associated with "+fd+"\n");
+                    fdFlush(STD_ERR);
+                    return;
+                }
+                if (!fbuf.mode.contains("w")) {
+                    send(STD_ERR, "File descriptor "+fd+" not open for writing\n");
+                    fdFlush(STD_ERR);
+                    return;
+                }
+
+                fbuf.file.setContents(fbuf.file.getContents() + fbuf.buffer);
+                fbuf.buffer = "";
+            }
+        }
+    }
 
     private JBashEnvironment() {
         // Perform any initialization of the environment
@@ -26,6 +62,9 @@ public final class JBashEnvironment {
         environment.put("?", "0");
 
         fds = new HashMap<>();
+        fds.put(STD_IN, new FileBuffer("stdin", "rw"));
+        fds.put(STD_OUT, new FileBuffer("stdout", "rw"));
+        fds.put(STD_ERR, new FileBuffer("stderr", "rw"));
     }
 
     public static synchronized JBashEnvironment getInstance() {
@@ -57,18 +96,21 @@ public final class JBashEnvironment {
      * Sends a message to file descriptor <code>fd</code>.
      */
     public void send(int fd, String msg) {
-        fds.put(fd, fds.getOrDefault(fd, "") + msg);
+        var fbuf = fds.get(fd);
+        if (fbuf == null) return;
+
+        fbuf.buffer += msg;
     }
 
     /**
-     * Consumes any messages in file descriptor <code>fd</code>.
+     * Clears and returns the buffer in file descriptor <code>fd</code>.
      */
     public Optional<String> consume(int fd) {
-        var msg = instance.fds.get(fd);
-        fds.put(fd, "");
+        var fbuf = instance.fds.get(fd);
+        if (fbuf == null) return Optional.empty();
 
-        return msg == null
-            ? Optional.empty()
-            : Optional.of(msg);
+        var msg = fbuf.buffer;
+        fbuf.buffer = "";
+        return Optional.of(msg);
     }
 }

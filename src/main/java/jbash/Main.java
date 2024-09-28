@@ -17,13 +17,6 @@ public class Main {
     private static final FileSystemAPI FSAPI = FileSystemAPI.getInstance();
     private static final JBashEnvironment ENV = JBashEnvironment.getInstance();
 
-    public static void flushStdout() {
-        System.out.print(ENV.consume(ENV.STD_OUT).orElse(""));
-    }
-    public static void flushStderr() {
-        System.out.print("\033[31m"+ENV.consume(ENV.STD_ERR).orElse("")+"\033[0m");
-    }
-
     public static void main(String[] args) {
         while (true) {
             // Prompt
@@ -34,8 +27,8 @@ public class Main {
             catch (JBParserException e) {
                 // Parsing failed: let the user know what went wrong
                 ENV.send(ENV.STD_ERR, e.getMessage()+"\n");
-                flushStdout();
-                flushStderr();
+                ENV.fdFlush(ENV.STD_OUT);
+                ENV.fdFlush(ENV.STD_ERR);
                 continue;
             }
             if (tokens.isEmpty()) continue;
@@ -50,9 +43,6 @@ public class Main {
             var cmdName = tokens.getFirst();
             int returnCode = new JBashProcess().exec(cmdName, tokens.subList(1, tokens.size()));
             ENV.set("?", Integer.toString(returnCode));
-
-            flushStdout();
-            flushStderr();
         }
     }
 }

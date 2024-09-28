@@ -171,7 +171,6 @@ public class FileSystemAPI {
         return createDirectory(name, parentPath);
     }
 
-
     public Directory getRoot() {
         return this.root;
     }
@@ -193,6 +192,21 @@ public class FileSystemAPI {
         this.currentDirectory = newDirectory;
         ENV.set("PWD", currentDirectory.getPath());
 
+        return true;
+    }
+
+    /**
+     * Writes to the given file. Returns false if it could not write.
+     * **Overwrites existing content.**
+     * @param path Absolute or relative path to file.
+     * @param content Content to write.
+     * @return True if operation was a success, false otherwise.
+     */
+    public boolean writeToFile(String path, String content) {
+        var file = getFileSystemFile(path).orElse(null);
+        if (file == null) return false;
+
+        file.setContents(content);
         return true;
     }
 

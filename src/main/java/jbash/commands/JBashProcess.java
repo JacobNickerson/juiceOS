@@ -1,5 +1,7 @@
 package jbash.commands;
 
+import jbash.environment.JBashEnvironment;
+
 import java.util.List;
 
 /**
@@ -24,9 +26,13 @@ public class JBashProcess {
     }
 
     public int exec(String cmdName, List<String> argv) {
-        return CommandFactory.get(cmdName)
-                             .setFds(STD_IN, STD_OUT, STD_ERR)
-                             .execute(argv);
-    }
+        int code = CommandFactory.get(cmdName)
+                                 .setFds(STD_IN, STD_OUT, STD_ERR)
+                                 .execute(argv);
+        JBashEnvironment.getInstance().fdFlush(STD_IN);
+        JBashEnvironment.getInstance().fdFlush(STD_OUT);
+        JBashEnvironment.getInstance().fdFlush(STD_ERR);
 
+        return code;
+    }
 }
