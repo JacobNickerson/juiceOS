@@ -11,7 +11,7 @@ public class FileSystemAPI {
     private Directory currentDirectory;
 
     final Disk disk;
-    private static FileSystemAPI FSAPI = new FileSystemAPI();
+    private static FileSystemAPI instance = null;
     private static final JBashEnvironment ENV = JBashEnvironment.getInstance();
 
     private FileSystemAPI() {
@@ -21,11 +21,12 @@ public class FileSystemAPI {
     }
 
     public static FileSystemAPI getInstance() {
-        return FSAPI;
+        if (instance == null) { instance = new FileSystemAPI(); }
+        return instance;
     }
 
-    public void reset() {
-        this.FSAPI = new FileSystemAPI();
+    public void reset() {  // needed for unit testing
+        instance = new FileSystemAPI();
     }
 
     /**

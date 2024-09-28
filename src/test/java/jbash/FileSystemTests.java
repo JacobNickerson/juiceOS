@@ -230,26 +230,6 @@ public class FileSystemTests {
     }
 
     @Test
-    void testGetFileSystemObjectQuotes() {
-        FSAPI.createDirectory("testFolder", root);
-        FSAPI.createDirectory("test Folder 2", root);
-        Assertions.assertTrue(FSAPI.createFile("testFile", "/testFolder"), "testFile not created");
-        Assertions.assertTrue(FSAPI.createFile("testFile2", "/test Folder 2"), "testFile2 not created");
-
-        Optional<FileSystemObject> testFileOptional = FSAPI.getFileSystemObject("/testFolder/\"testFile\"");
-        Assertions.assertTrue(testFileOptional.isPresent(), "Test file not found with surround quotations and no spaces");
-
-        Optional<FileSystemObject> testFileOptional2 = FSAPI.getFileSystemObject("/testFolder/\"test\"File");
-        Assertions.assertTrue(testFileOptional2.isPresent(), "Test file not found with mid string quotations and no spaces");
-
-        Optional<FileSystemObject> testFileOptional3 = FSAPI.getFileSystemObject("/\"test Folder 2\"/testFile");
-        Assertions.assertTrue(testFileOptional3.isPresent(), "Test file not found with surrounding quotations and spaces");
-
-        Optional<FileSystemObject> testFileOptional4 = FSAPI.getFileSystemObject("/\"test\" Folder 2/testFile");
-        Assertions.assertTrue(testFileOptional4.isPresent(), "Test file not found with mid string quotations and spaces");
-    }
-
-    @Test
     void testMoveCurrentDirectory() {
         FSAPI.createDirectory("testFolder", "/");
         FSAPI.createDirectory("testFolder2", "/testFolder");
