@@ -2,10 +2,8 @@ package jbash.commands;
 
 import java.util.List;
 
-public class CmdEcho extends Command {
-    CmdEcho(String name) {
-        super("echo");
-    }
+class CmdEcho extends Command {
+    CmdEcho(String name) { super("echo"); }
 
     @Override
     public String getHelp() {
@@ -13,12 +11,12 @@ public class CmdEcho extends Command {
     }
 
     @Override
-    public int execute(List<String> args) {
-        for (String arg : args) {
-            System.out.print(arg);
-            System.out.print(" ");
+    public int execute(List<String> argv) {
+        for (String arg : argv) {
+            cmdPrint(arg);
+            cmdPrint(" ");
         }
-        System.out.println();
+        cmdPrintln();
         return 0;
     }
 }

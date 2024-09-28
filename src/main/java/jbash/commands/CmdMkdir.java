@@ -1,11 +1,10 @@
 package jbash.commands;
 
-import jbash.filesystem.File;
 import jbash.filesystem.FileSystemAPI;
 
 import java.util.List;
 
-public class CmdMkdir extends Command {
+class CmdMkdir extends Command {
     CmdMkdir(String name) {
         super("cd");
     }
@@ -16,15 +15,15 @@ public class CmdMkdir extends Command {
     }
 
     @Override
-    public int execute(List<String> args) {
-        if (args.isEmpty()) {
-            System.out.println("mkdir: missing operand");
-            System.out.println("Try 'mkdir --help' for more information." );
+    public int execute(List<String> argv) {
+        if (argv.isEmpty()) {
+            cmdErrln("mkdir: missing operand");
+            cmdErrln("Try 'mkdir --help' for more information." );
         }
         FileSystemAPI FSAPI = FileSystemAPI.getInstance();
-        for (String arg : args) {
+        for (String arg : argv) {
             if (!FSAPI.createDirectory(arg)) {
-                System.out.println("mkdir: cannot create directory '" + arg + "'");
+                cmdErrln("mkdir: cannot create directory '" + arg + "'");
             }
         }
         return 0;

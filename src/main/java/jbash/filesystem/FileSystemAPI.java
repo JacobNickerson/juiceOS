@@ -1,5 +1,7 @@
 package jbash.filesystem;
 
+import jbash.environment.JBashEnvironment;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +11,7 @@ public class FileSystemAPI {
     private Directory currentDirectory;
 
     private static FileSystemAPI FSAPI = new FileSystemAPI();
+    private static final JBashEnvironment ENV = JBashEnvironment.getInstance();
 
     private FileSystemAPI() {
         this.root = new Directory("root", null);
@@ -21,6 +24,32 @@ public class FileSystemAPI {
 
     public void reset() {
         this.FSAPI = new FileSystemAPI();
+    }
+
+    /**
+     * Returns the directory with the filepath <code>path</code>.
+     * If such an object exists but is not a directory, or no such object exists, Optional.empty() is returned.
+     * @param path Absolute or relative filepath to retrieve the directory.
+     * @return The directory, or Optional.empty().
+     */
+    public Optional<Directory> getFileSystemDirectory(String path) {
+        var item = getFileSystemObject(path);
+        if (item.isEmpty()) return Optional.empty();
+        if (item.get() instanceof Directory dir) return Optional.of(dir);
+        else return Optional.empty();
+    }
+
+    /**
+     * Returns the file with the filepath <code>path</code>.
+     * If such an object exists but is not a file, or no such object exists, Optional.empty() is returned.
+     * @param path Absolute or relative filepath to retrieve the file.
+     * @return The file, or Optional.empty().
+     */
+    public Optional<File> getFileSystemFile(String path) {
+        var item = getFileSystemObject(path);
+        if (item.isEmpty()) return Optional.empty();
+        if (item.get() instanceof File file) return Optional.of(file);
+        else return Optional.empty();
     }
 
     public Optional<FileSystemObject> getFileSystemObject(String path) {
@@ -142,7 +171,6 @@ public class FileSystemAPI {
         return createDirectory(name, parentPath);
     }
 
-
     public Directory getRoot() {
         return this.root;
     }
@@ -155,10 +183,30 @@ public class FileSystemAPI {
     }
 
     public boolean moveCurrentDirectory(String path) {
-        if (path.isEmpty()) { this.currentDirectory = this.root; return true; }  // TODO: Implement home directory and change this to navigate to it
-        Optional<FileSystemObject> newDirectoryOptional = getFileSystemObject(path);
-        if (newDirectoryOptional.isEmpty() || !(newDirectoryOptional.get() instanceof Directory)) { return false; }
-        this.currentDirectory = (Directory) newDirectoryOptional.get();
+        Directory newDirectory = (path.isEmpty()
+                ? getFileSystemDirectory(ENV.get("HOME"))
+                : getFileSystemDirectory(path)
+        ).orElse(null);
+        if (newDirectory == null) return false;
+
+        this.currentDirectory = newDirectory;
+        ENV.set("PWD", currentDirectory.getPath());
+
+        return true;
+    }
+
+    /**
+     * Writes to the given file. Returns false if it could not write.
+     * **Overwrites existing content.**
+     * @param path Absolute or relative path to file.
+     * @param content Content to write.
+     * @return True if operation was a success, false otherwise.
+     */
+    public boolean writeToFile(String path, String content) {
+        var file = getFileSystemFile(path).orElse(null);
+        if (file == null) return false;
+
+        file.setContents(content);
         return true;
     }
 

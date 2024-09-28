@@ -7,7 +7,7 @@ import jbash.filesystem.FileSystemObject;
 import java.util.List;
 import java.util.Optional;
 
-public class CmdPwd extends Command {
+class CmdPwd extends Command {
     CmdPwd(String name) {
         super("pwd");
     }
@@ -18,10 +18,10 @@ public class CmdPwd extends Command {
     }
 
     @Override
-    public int execute(List<String> args) {
+    public int execute(List<String> argv) {
         Optional<FileSystemObject> currentDirectoryOptional = FileSystemAPI.getInstance().getFileSystemObject("./");
-        if (currentDirectoryOptional.isEmpty() || !(currentDirectoryOptional.get() instanceof Directory currentDirectory)) { System.out.println("ERROR: I HAVE NO IDEA WHAT HAPPENED"); return 1; }
-        System.out.println(currentDirectory.getPath());
+        if (currentDirectoryOptional.isEmpty() || !(currentDirectoryOptional.get() instanceof Directory currentDirectory)) { cmdErrln("ERROR: I HAVE NO IDEA WHAT HAPPENED"); return 1; }
+        cmdPrintln(currentDirectory.getPath());
         return 0;
     }
 }
