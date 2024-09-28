@@ -38,7 +38,7 @@ public class Disk {
 
             // Filesystem by this name already exists, but isn't the size we specified!
             if (fs.length() != 0 && fs.length() != sizeBytes) {
-                System.out.println("WARNING: Filesystem "+name+" already exists, but is of size "+fs.length());
+                System.out.println("WARNING: Filesystem " + name + " already exists, but is of size " + fs.length());
                 System.out.println("         The system will not be recreated.");
             }
 
