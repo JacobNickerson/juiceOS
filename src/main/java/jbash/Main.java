@@ -31,7 +31,10 @@ public class Main {
                 ENV.fdFlush(ENV.STD_ERR);
                 continue;
             }
-            if (tokens.isEmpty()) continue;
+            if (tokens.isEmpty()) {
+                ENV.set("?", "0");
+                continue;
+            }
 
             // Delete later: this just prints our tokens out
             if (debug) {
