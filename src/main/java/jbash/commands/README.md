@@ -1,6 +1,7 @@
 # Programmer's Guide to Adding Commands
 The process of adding a new command can be as simple as the following:
-- Add new case to the CommandFactory, i.e: `case "foo" -> new CmdFoo(commandName)`
+- Add new case to the CommandFactory, i.e: `case "foo" -> new CmdFoo("commandName", parent)`
+  - Note that adding `parent` to the constructor is _critical_ -- every command has a parent process.
 - Create the new class `CmdFoo` in the commands package, and have it extend `Command`.
 
 A structure you can use for new commands is outlined here. You may copy-paste and fill in the blanks, if you like.
@@ -8,12 +9,13 @@ A structure you can use for new commands is outlined here. You may copy-paste an
 package jbash.commands;
 
 import java.util.List;
+import jbash.environment.JProcess;
 
 // TODO: Change command name
 class CHANGEME extends Command {
     // TODO: Change constructor to command name, and add string version of command name to super()
-    // I.e. CmdEcho(String name) { super("echo"); }
-    CHANGEME(String name) { super(CHANGEME); }
+    // I.e. CmdEcho(String name, JProcess parent) { super(name, parent); }
+    CHANGEME(String name, JProcess parent) { super(name, parent); }
 
     @Override
     public String getHelp() {

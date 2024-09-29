@@ -1,10 +1,12 @@
 package jbash.commands;
 
+import jbash.environment.JProcess;
+
 import java.util.List;
 
 class CmdUnknown extends Command {
-    CmdUnknown(String name) {
-        super(name);
+    CmdUnknown(String name, JProcess parent) {
+        super(name, parent);
     }
 
     @Override

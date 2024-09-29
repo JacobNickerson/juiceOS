@@ -1,6 +1,6 @@
 package jbash.filesystem;
 
-import jbash.environment.JBashEnvironment;
+import jbash.environment.JKernel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +12,7 @@ public class FileSystemAPI {
 
     final Disk disk;
     private static FileSystemAPI instance = null;
-    private static final JBashEnvironment ENV = JBashEnvironment.getInstance();
+    private static JKernel kernel = JKernel.getInstance();
 
     private FileSystemAPI() {
         this.root = new Directory("root", null);
@@ -288,13 +288,13 @@ public class FileSystemAPI {
      */
     public boolean moveCurrentDirectory(String path) {
         Directory newDirectory = (path.isEmpty()
-                ? getFileSystemDirectory(ENV.get("HOME"))
+                ? getFileSystemDirectory(kernel.current.env.get("HOME"))
                 : getFileSystemDirectory(path)
         ).orElse(null);
         if (newDirectory == null) return false;
 
         this.currentDirectory = newDirectory;
-        ENV.set("PWD", currentDirectory.getPath());
+        kernel.current.env.set("PWD", currentDirectory.getPath());
 
         return true;
     }

@@ -1,9 +1,13 @@
 package jbash.commands;
 
+import jbash.environment.JProcess;
+
 import java.util.List;
 
 class CmdEcho extends Command {
-    CmdEcho(String name) { super("echo"); }
+    CmdEcho(String name, JProcess parent) {
+        super(name, parent);
+    }
 
     @Override
     public String getHelp() {
