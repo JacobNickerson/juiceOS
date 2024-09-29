@@ -22,6 +22,47 @@ public final class JBashEnvironment {
     private final HashMap<Integer, FileBuffer> fds;
 
     /**
+     * Open a file and return its file descriptor.
+     * @param filepath Filepath of the file to open.
+     * @param mode Mode
+     * @return File descriptor associated with the open file, or -1 if error.
+     */
+    int open(String filepath, String mode) {
+        return -1;
+    }
+
+    /**
+     * Closes a file associated with a file descriptor.
+     * @param fd File descriptor associated with the file to close.
+     * @return 0 on success of the operation, or -1 if error.
+     */
+    int close(int fd) {
+        return -1;
+    }
+
+    /**
+     * Reads <code>count</code> bytes from the file associated with <code>fd</code> into <code>buffer.</code>
+     * @param fd File descriptor.
+     * @param buffer Out parameter -- byte buffer to read in.
+     * @param count Number of bytes to read.
+     * @return Number of bytes read. May be less than <code>count</code> in some cases (EOF being reached is one.) May also be -1 in case of error.
+     */
+    int read(int fd, byte[] buffer, int count) {
+        return -1;
+    }
+
+    /**
+     * Writes <code>count</code> characters from <code>buffer</code> to the file associated with <code>fd</code>.
+     * @param fd File descriptor.
+     * @param buffer Buffer to write to disk.
+     * @param count Number of characters to write from buffer.
+     * @return Number of bytes written, or negative on error.
+     */
+    int write(int fd, byte[] buffer, int count) {
+        return -1;
+    }
+
+    /**
      * Flushes the buffer of a file descriptor out to its destination, and clears the buffer associated with it.
      * For STD_IN, this just clears it.
      * For STD_OUT and STD_ERR, this is to the screen.
