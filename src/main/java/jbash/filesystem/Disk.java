@@ -9,6 +9,7 @@ import java.io.*;
 public class Disk {
     private final RandomAccessFile fs;
     private final long SIZE_BYTES;
+    private static final int BLOCK_SIZE = 1024 * 4;  // block size of 4K is probably good?
     private final int INODE_SIZE_BYTES;
     private final int NUM_INODES;
 
