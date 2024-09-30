@@ -33,16 +33,17 @@ class CmdLs extends Command {
             if (argv.size() > 1) { multiplePaths = true; }
             for (String path : argv) {
                 Optional<FileSystemObject> directory = FSAPI.getFileSystemObject(path);
-                if (directory.isEmpty()) { cmdErrln("ls: cannot access '" + path + "': No such file or directory"); }
+                if (directory.isEmpty()) { err("cannot access '" + path + "': No such file or directory"); }
                 else if (!(directory.get() instanceof Directory)) { cmdPrintln(directory.get().getName()); }
                 else {
                     List<FileSystemObject> children = ((Directory) directory.get()).getChildren();
-                    if (multiplePaths) { System.out.println(path + ":"); }
+                    if (multiplePaths) { cmdPrintln(path + ":"); }
                     for (FileSystemObject child : children) {
                         cmdPrint(child.getName());
                         cmdPrint(" ");
                     }
                     cmdPrintln();
+                    if (multiplePaths) { cmdPrintln(); }
                 }
             }
         }

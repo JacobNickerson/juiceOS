@@ -63,4 +63,8 @@ abstract class Command {
 
     public abstract String getHelp();
     public abstract int execute(List<String> argv);
+
+    public void err(String errorMessage) {
+        cmdErrln(name + ": " + errorMessage);
+    }
 }
