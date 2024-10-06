@@ -4,14 +4,17 @@ import jbash.environment.JKernel;
 import jbash.environment.JProcess;
 import jbash.parser.JBParserException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import static jbash.parser.JBashParser.parseCommand;
 
 class CmdJBash extends Command {
     CmdJBash(String name, JProcess parent) { super(name, parent); }
+
+    private HashMap<String, String> aliases = new HashMap<>();
+    private final Set<String> builtIns = Set.of(
+            "alias", "cd", "echo", "pwd"
+    );
 
     @Override
     public String getHelp() {
@@ -43,10 +46,26 @@ class CmdJBash extends Command {
 
             // Gather command name
             var cmdName = tokens.getFirst();
+
+            // TODO: Fix Aliasing
+            // Aliases allow for an entire command with args to be aliased to a keyword
+            // I think for this we have to parse the alias as well and add any potential args
+            // from the alias to the command args
+//            // Attempt to look for aliases
+//            int maxRecursion = 100;  // picked arbitrarily at random
+//            while (maxRecursion-- > 0 && aliases.containsKey(cmdName)) {
+//                cmdName = aliases.get(cmdName);
+//            }
             if (cmdName.equals("exit")) { break; }
 
-            // Fork and run
-            int returnCode = OS.fork(cmdName, tokens.subList(1, tokens.size()));
+            // Run/Fork the command
+            int returnCode;
+            if (builtIns.contains(cmdName)) {
+                returnCode = OS.exec(cmdName, tokens.subList(1, tokens.size()));
+            } else {
+                returnCode = OS.fork(cmdName, tokens.subList(1, tokens.size()));
+            }
+
             ENV.set("?", Integer.toString(returnCode));
         }
 
