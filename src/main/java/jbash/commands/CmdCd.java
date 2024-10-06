@@ -1,12 +1,13 @@
 package jbash.commands;
 
+import jbash.environment.JProcess;
 import jbash.filesystem.FileSystemAPI;
 
 import java.util.List;
 
 class CmdCd extends Command {
-    CmdCd(String name) {
-        super("cd");
+    CmdCd(String name, JProcess parent) {
+        super(name, parent);
     }
 
     @Override

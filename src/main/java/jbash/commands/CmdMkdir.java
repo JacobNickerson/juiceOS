@@ -1,12 +1,13 @@
 package jbash.commands;
 
+import jbash.environment.JProcess;
 import jbash.filesystem.FileSystemAPI;
 
 import java.util.List;
 
 class CmdMkdir extends Command {
-    CmdMkdir(String name) {
-        super("cd");
+    CmdMkdir(String name, JProcess parent) {
+        super(name, parent);
     }
 
     @Override

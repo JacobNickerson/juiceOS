@@ -1,5 +1,6 @@
 package jbash.commands;
 
+import jbash.environment.JProcess;
 import jbash.filesystem.Directory;
 import jbash.filesystem.FileSystemAPI;
 import jbash.filesystem.FileSystemObject;
@@ -8,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 class CmdPwd extends Command {
-    CmdPwd(String name) {
-        super("pwd");
+    CmdPwd(String name, JProcess parent) {
+        super(name, parent);
     }
 
     @Override
