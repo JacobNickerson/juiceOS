@@ -67,7 +67,7 @@ public class FileSystemAPI {
         List<String> pathArgs = Arrays.stream(path.split("/")).filter(s -> !s.isEmpty()).toList();
         if (pathArgs.isEmpty()) { return Optional.of(root); }
         Directory workingDirectory;
-        if (pathArgs.getFirst().equals("/")) {  // starting in root directory
+        if (path.startsWith("/")) {  // starting in root directory
             workingDirectory = this.root;
         } else {
             workingDirectory = this.currentDirectory;
