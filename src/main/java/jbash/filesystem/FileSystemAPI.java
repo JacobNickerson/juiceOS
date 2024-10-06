@@ -234,11 +234,6 @@ public class FileSystemAPI {
     }
 
     /**
-     * Attempts to create a directory with the specified name belonging to the parent directory with the absolute
-     * or relative path <code>parentPath</code>. Returns a boolean, true if file creation is successful and
-     * false otherwise. Will fail if no name is inputted, if the parent directory is not found, or if the
-     * parent directory already has a child with the same name as specified.
-     *
      * Attempts to create a directory with the absolute or relative filepath <code>path</code>.
      * Returns a boolean, true if directory creation is successful and false otherwise. Will fail if
      * the path leads to an already existing object or path goes through another directory that does
