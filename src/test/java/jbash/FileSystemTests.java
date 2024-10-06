@@ -170,6 +170,10 @@ public class FileSystemTests {
         Optional<FileSystemObject> testFileOptional2 = FSAPI.getFileSystemObject("/testFolder/testFile");
         Assertions.assertTrue(testFileOptional2.isPresent(), "Test file not found after move");
         Assertions.assertInstanceOf(File.class, testFileOptional.get(), "Test file is not a file after move");
+
+        Assertions.assertTrue(FSAPI.moveCurrentDirectory("/testFolder"), "Failed to move directories");
+        Optional<FileSystemObject> testFileOptional3 = FSAPI.getFileSystemObject("/testFolder/testFile");
+        Assertions.assertTrue(testFileOptional3.isPresent(), "Test file not found with absolute directory when searching from another directory");
     }
 
     @Test
