@@ -19,11 +19,13 @@ class CmdMkdir extends Command {
         if (argv.isEmpty()) {
             err("missing operand");
             cmdErrln("Try 'mkdir --help' for more information." );
+            return -1;
         }
         FileSystemAPI FSAPI = FileSystemAPI.getInstance();
         for (String arg : argv) {
             if (!FSAPI.createDirectory(arg)) {
                 err("cannot create directory '" + arg +"'");
+                return -1;
             }
         }
         return 0;

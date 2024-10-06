@@ -19,9 +19,9 @@ class CmdPwd extends Command {
 
     @Override
     public int execute(List<String> argv) {
-        Optional<FileSystemObject> currentDirectoryOptional = FileSystemAPI.getInstance().getFileSystemObject("./");
-        if (currentDirectoryOptional.isEmpty() || !(currentDirectoryOptional.get() instanceof Directory currentDirectory)) { cmdErrln("ERROR: I HAVE NO IDEA WHAT HAPPENED"); return 1; }
-        cmdPrintln(currentDirectory.getPath());
+        Optional<Directory> currentDirectoryOptional = FileSystemAPI.getInstance().getFileSystemDirectory("./");
+        if (currentDirectoryOptional.isEmpty()) { err("I don't think this is reachable?"); return 1; }
+        cmdPrintln(currentDirectoryOptional.get().getPath());
         return 0;
     }
 }
