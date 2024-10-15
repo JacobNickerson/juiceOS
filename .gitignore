@@ -1,5 +1,8 @@
 # Our file system
-*.jfs
+*.tbff
+
+# Config file
+.idea/misc.xml
 
 # From https://github.com/github/gitignore/blob/master/Gradle.gitignore
 .gradle

@@ -1,12 +1,11 @@
 package jbash.filesystem;
 
-import java.io.File;
 import java.io.*;
 
 /**
  * Abstraction over The Big File (aka a disk stored on our Host OS.)
  */
-public class Disk {
+public class TBFF {
     private final RandomAccessFile fs;
     private final long SIZE_BYTES;
     private static final int BLOCK_SIZE = 1024 * 4;  // block size of 4K is probably good?
@@ -27,7 +26,7 @@ public class Disk {
      * @param name filename of the existing disk, or new one
      * @param sizeBytes size, in bytes, of the disk
      */
-    Disk(String name, long sizeBytes) {
+    TBFF(String name, long sizeBytes) {
         // Minimum size for the file system is 1MB
         if (sizeBytes < 1024*1024) {
             System.out.println("WARNING: Cannot create filesystem of size "+sizeBytes);
@@ -84,7 +83,7 @@ public class Disk {
 
         // 4 BYTES: Magic number at the start to tell this is a jfs file
         fs.seek(OFFSET_MAGIC_NUMBER);
-        fs.writeBytes("JFS!");  // MUST BE AT MOST 4 BYTES
+        fs.writeBytes("TBFF");  // MUST BE AT MOST 4 BYTES
 
         // 4 BYTES:
         int numINodes = (int) (SIZE_BYTES / (8 * 1024));
