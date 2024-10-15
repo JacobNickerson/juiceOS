@@ -1,10 +1,55 @@
 package jbash.filesystem;
 
+
+enum FileType {
+    File,
+    Directory
+}
+
+record Permission(boolean r, boolean w, boolean x) {};
+record FilePerms(Permission owner, Permission group, Permission other) {}
+
+
 public class Inode {
-    public int inodeNumber;                          // unique inode number
-    public volatile int referenceCount;              // number of hardlinks lead to this file
-    public int userId;                               // user id of owner
-    public int groupId;                              // group id of owner
-    public long fileSizeBytes;                       // file size in bytes
-    public long fileSizeBlocks;                      // file size in blocks
+    FileType filetype;
+    FilePerms perms;
+    int userId;
+    int groupId;
+    int numRefs;
+    long tsCreate;
+    long tsModify;
+    long tsAccess;
+    long[] dataPtrs;
+    long inodePtr;
+
+    Inode(FileType filetype) {
+        this(filetype, parsePerms("rw-r--r--"));
+    }
+
+    Inode(FileType filetype, FilePerms permissions) {
+        this.filetype = filetype;
+        this.perms = permissions;
+        this.userId = 0;
+        this.groupId = 0;
+        this.numRefs = 1;
+        this.tsCreate = 0;
+        this.tsModify = 0;
+        this.tsAccess = 0;
+        dataPtrs = new long[12];
+        inodePtr = TBFF.writeInodeToDisk(this);
+    }
+
+    /**
+     * Given a permstring in the format "rwxrwxrwx", returns a FilePerms record.
+     * Bad and hacky but it works
+     */
+    static FilePerms parsePerms(String permString) {
+        if (permString.length() != 9) throw new RuntimeException("Invalid permission string: Expected 9 characters matching regex [r|w|x|-]");
+        return new FilePerms(
+                new Permission(permString.charAt(0) != '-', permString.charAt(1) != '-',permString.charAt(2) != '-'),
+                new Permission(permString.charAt(3) != '-', permString.charAt(4) != '-',permString.charAt(5) != '-'),
+                new Permission(permString.charAt(6) != '-', permString.charAt(7) != '-',permString.charAt(8) != '-')
+        );
+    }
+
 }

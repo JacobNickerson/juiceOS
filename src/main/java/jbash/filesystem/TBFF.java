@@ -100,4 +100,34 @@ public class TBFF {
         fs.seek(OFFSET_DATA_START_PTR);
         fs.writeLong(dataBlockPtr);
     }
+
+    /**
+     * Iterates through the inode block of TBFF and finds a spot
+     * @return Offset (pointer) to the spot in TBFF where a new inode may be placed.
+     */
+    private static long getFreeInodeSpot() {
+        // TODO:
+        //   Use OFFSET_INODES_START and come up with some algorithm to determine
+        //   where to write this new inode in TBFF. Sequentially is fine for now!
+
+        return -1;
+    }
+
+    /**
+     * Given a new inode, writes it to TBFF and returns its offset.
+     * If no space is available, throws a runtime exception.
+     * @param inode Inode to write to disk.
+     * @return Offset (pointer) to this inode in TBFF.
+     */
+    static long writeInodeToDisk(Inode inode) throws RuntimeException {
+        long inodePtr = getFreeInodeSpot();
+        // TODO:
+        //   Once we've obtained the free spot, you'll want to write it to TBFF
+        //   using a similar method to ``format()``. Write the inode to disk
+        //   however you'd like, but ensure it doesn't go over INODE_SIZE_BYTES.
+        //   We may also consider making the first byte of the inode something like
+        //   "F" for files or "D" for directories, so getFreeInodeSpot() only needs
+        //   to check one byte to see if a spot is free.
+        return -1;
+    }
 }
