@@ -1,5 +1,6 @@
 # Our file system
 *.tbff
+*.jfs
 
 # Config file
 .idea/misc.xml
