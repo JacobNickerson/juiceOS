@@ -26,7 +26,7 @@ public class TBFF {
      * @param name filename of the existing disk, or new one
      * @param sizeBytes size, in bytes, of the disk
      */
-    TBFF(String name, long sizeBytes) {
+    public TBFF(String name, long sizeBytes) {
         // Minimum size for the file system is 1MB
         if (sizeBytes < 1024*1024) {
             System.out.println("WARNING: Cannot create filesystem of size "+sizeBytes);
@@ -105,10 +105,14 @@ public class TBFF {
      * Iterates through the inode block of TBFF and finds a spot
      * @return Offset (pointer) to the spot in TBFF where a new inode may be placed.
      */
-    private static long getFreeInodeSpot() {
-        // TODO:
-        //   Use OFFSET_INODES_START and come up with some algorithm to determine
-        //   where to write this new inode in TBFF. Sequentially is fine for now!
+    long getFreeInodeSpot() throws IOException {
+        // Linear search the first byte of each possible inode, looking for a 0 where file type is stored
+        for (long inodeStartPos = OFFSET_INODES_START; inodeStartPos < (long) OFFSET_INODES_START + (long) NUM_INODES * INODE_SIZE_BYTES; inodeStartPos += INODE_SIZE_BYTES) {
+            fs.seek(inodeStartPos);
+            if ((fs.readByte() & 0xFF) == 0) {  // Found an empty byte 0 in an inode
+                return inodeStartPos;
+            }
+        }
 
         return -1;
     }
@@ -119,8 +123,9 @@ public class TBFF {
      * @param inode Inode to write to disk.
      * @return Offset (pointer) to this inode in TBFF.
      */
-    static long writeInodeToDisk(Inode inode) throws RuntimeException {
+    public int writeInodeToDisk(Inode inode) throws RuntimeException, IOException {
         long inodePtr = getFreeInodeSpot();
+
         // TODO:
         //   Once we've obtained the free spot, you'll want to write it to TBFF
         //   using a similar method to ``format()``. Write the inode to disk
@@ -128,6 +133,63 @@ public class TBFF {
         //   We may also consider making the first byte of the inode something like
         //   "F" for files or "D" for directories, so getFreeInodeSpot() only needs
         //   to check one byte to see if a spot is free.
-        return -1;
+
+        // Writing file type
+        fs.seek(inodePtr);
+        fs.writeInt(inode.getFileType());
+
+        // Writing permissions
+        FilePerms inodePerms = inode.getPermissions();
+
+        Permission owner = inodePerms.owner();
+        byte ownerPerms = 0;
+        if (owner.r()) { ownerPerms |= 0b00000100; }
+        if (owner.w()) { ownerPerms |= 0b00000010; }
+        if (owner.x()) { ownerPerms |= 0b00000001; }
+
+        Permission group = inodePerms.group();
+        byte groupPerms = 0;
+        if (group.r()) { groupPerms |= 0b00000100; }
+        if (group.w()) { groupPerms |= 0b00000010; }
+        if (group.x()) { groupPerms |= 0b00000001; }
+
+        Permission other = inodePerms.group();
+        byte otherPerms = 0;
+        if (other.r()) { otherPerms |= 0b00000100; }
+        if (other.w()) { otherPerms |= 0b00000010; }
+        if (other.x()) { otherPerms |= 0b00000001; }
+
+        fs.writeByte(ownerPerms);
+        fs.writeByte(groupPerms);
+        fs.writeByte(otherPerms);
+
+        // Writing UID, GUID, etc.
+        fs.writeInt(inode.getUserId());
+        fs.writeInt(inode.getGroupId());
+        fs.writeInt(inode.getNumRefs());
+        fs.writeLong(inode.getCreateTime());
+        fs.writeLong(inode.getModTime());
+        fs.writeLong(inode.getAccessTime());
+
+        // Writing pointers to data block
+        long[] dataPtrs = inode.getDataPtrs();
+        for (long dataPtr : dataPtrs) {
+            if (dataPtr == 0) { break; }
+            fs.writeLong(dataPtr);
+        }
+
+        return 0;
+    }
+
+    /**
+     * Given a long offset, reads the inode stored at that position in TBFF
+     * and returns an inode object constructed from it.
+     * If no inode is found at that position, will raise some typa error idk
+     * @param offset Position in TBFF where the Inode is found
+     * @return newInode created from reading TBFF
+     */
+    public Inode readInodeFromDisk(long offset) {
+        Inode newInode = new Inode(FileType.File); // placeholder
+        return newInode;
     }
 }

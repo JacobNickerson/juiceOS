@@ -52,4 +52,39 @@ public class Inode {
         );
     }
 
+    int getFileType() {
+        return (this.filetype == FileType.File) ? 1 : 2;
+    }
+
+    FilePerms getPermissions() {
+        return perms;
+    }
+
+    int getUserId() {
+        return userId;
+    }
+
+    int getGroupId() {
+        return groupId;
+    }
+
+    int getNumRefs() {
+        return numRefs;
+    }
+
+    long getCreateTime() {
+        return tsCreate;
+    }
+
+    long getModTime() {
+        return tsModify;
+    }
+
+    long getAccessTime() {
+        return tsAccess;
+    }
+
+    long[] getDataPtrs() {
+        return dataPtrs;
+    }
 }
